@@ -28,13 +28,15 @@ class Particle(pygame.sprite.Sprite):
 
         #should this be a sub class?
         if self.type == 'neutron':
-            self.betadecay == False
+            self.betadecay = False
             Particle.neutrons += 1
         if self.type == 'neutrino':
-            self.isAbsorbed == False
+            self.isAbsorbed = False
             Particle.neutrinos += 1
+        if self.type == 'electron':
+            self.electroncapture = False
 
-                #these are whatever
+        #these are whatever
         self.radius = 2
         self.color = (50, 50, 60)
 
@@ -62,6 +64,10 @@ class Particle(pygame.sprite.Sprite):
             #compute strong force  
             self.acc += self.computeForce(particle)
 
+        if self.type == 'electron':
+            if pygame.sprite.collide_mask(self,particle) and isinstance(particle,Player):
+                self.electroncapture = True
+            self.acc += self.computeForce(particle)
 
         self.pos += self.vel * dt
         self.vel += self.acc * dt
@@ -75,8 +81,11 @@ class Particle(pygame.sprite.Sprite):
     def computeForce(self,particle):
         force = pygame.Vector2(0,0)
         r = self.pos-particle.pos
-        if (isinstance(particle,Particle) and particle.type == 'neutron') or isinstance(particle,Player):
+        if self.type == 'neutron' and (isinstance(particle,Particle) and particle.type == 'neutron') or isinstance(particle,Player):
                 force += StrongForce(r)*r.normalize()
+
+        if self.type == 'electron' and isinstance(particle,Player):
+            force += CoulombForce(r)*r.normalize()
 
         return force
 
