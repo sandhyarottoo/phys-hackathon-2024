@@ -2,10 +2,7 @@
 import numpy as np
 import pygame
 from forces import *
-from player import *
 from globals import *
-
-dt = 0.001
 
 class Particle(pygame.sprite.Sprite):
     neutrinos = 0
@@ -68,7 +65,7 @@ class Particle(pygame.sprite.Sprite):
             if pygame.sprite.collide_mask(self,particle) and isinstance(particle,Player):
                 self.electroncapture = True
             self.acc += self.computeForce(particle)
-
+ 
         self.pos += self.vel * dt
         self.vel += self.acc * dt
 
@@ -81,18 +78,81 @@ class Particle(pygame.sprite.Sprite):
     def computeForce(self,particle):
         force = pygame.Vector2(0,0)
         r = self.pos-particle.pos
-        if self.type == 'neutron' and (isinstance(particle,Particle) and particle.type == 'neutron') or isinstance(particle,Player):
+        if (self.type == 'neutron' or self.type == 'proton') and (particle.type == 'proton' or particle.type == 'neutron'):
                 force += StrongForce(r)*r.normalize()
 
-        if self.type == 'electron' and isinstance(particle,Player):
+        if (self.type == 'electron' or self.type == 'proton') and (particle.type == 'electron' or particle.type == 'proton'):
             force += CoulombForce(r)*r.normalize()
-
         return force
 
 
                 
+    
+class Player(Particle):
+    lives = 3
+    
+    def __init__(self,keys,bucket,canon):
+        super().__init__(type='proton', pos=pygame.Vector2(boardWidth // 2, 0), random=False)
+        self.angle = 0
+        self.initial_speed = 10
+        self.acc = pygame.Vector2(0, 0)
+
+        # these are specific to Player
+        self.radius = 2
+        self.color = (50, 50, 60)
         
+        # initialize the image and rect
+        self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        self.respawn = False
+        self.electroncapture = False
+        self.keys = keys
+        self.bucket = bucket
+        self.canon = canon
 
+    def update(self, particle):
+        keys = self.keys
+        bucket = self.bucket
+        canon = self.canon
+        # control cannon angle
+        if keys[pygame.K_LEFT]:
+            self.angle += 1
+            canon.angle += 1
+        if keys[pygame.K_RIGHT]:
+            self.angle -= 1
+            canon.angle -= 1
 
+        # shoot the player
+        if keys[pygame.K_SPACE]:
+            self.vel = pygame.Vector2(self.initial_speed * np.cos(self.angle), 
+                                      self.initial_speed * np.sin(self.angle))
 
-        
+        # detect collisions and apply responses
+        if pygame.sprite.collide_mask(self, particle):
+            # reflect off of neutrons
+            if particle.type == 'neutron':
+                self.vel.x *= -0.8
+                self.vel.y *= -0.8
+
+            # get "killed" by electrons
+            if particle.type == 'electron':
+                Player.lives -= 1
+                if Player.lives != 0:
+                    self.respawn = True
+                self.electroncapture = True
+
+        # gain a life if colliding with the bucket
+        if pygame.sprite.collide_mask(self, bucket):
+            Player.lives += 1
+            self.respawn = True
+
+        # respawn if needed
+        if self.respawn:
+            self.pos = pygame.Vector2(boardWidth // 2, 0)
+
+        self.pos += self.vel * dt
+        self.vel += self.acc * dt
+        self.acc = pygame.Vector2(0, 0)  # reset acceleration
+        self.acc += self.computeForce(particle)
+        self.rect.center = self.pos
