@@ -8,6 +8,7 @@ class Particle(pygame.sprite.Sprite):
     neutrinos = 0
     neutrons = 0
     def __init__(self,type,pos,vel = None):
+        pygame.sprite.Sprite.__init__(self)
         self.type = type
         self.pos = pos
         if vel == None:

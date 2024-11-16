@@ -24,7 +24,7 @@ while running:
     screen.fill((0, 0, 0))
     
     for box in boxes:
-        box.updateBox(dt)
+        box.updateBox(screen, dt)
         box.draw(screen, signal_content=True)
     
     for event in pygame.event.get():
