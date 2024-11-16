@@ -21,3 +21,14 @@ stinky: fridge
 missing: piotrusc + justusc
 
 sleepy: franco
+
+
+MUSIC & SFX:
+- Main Menu music (~20 seconds)
+- Game Music (>45 seconds)
+- Game win SFX
+- Wall collision SFX (slightly inelastic) >>> can have a couple that we iterate through? idk
+- Particle-Higgs disturbance collision SFX (slightly inelastic) >>> should be different from wall collision
+- Beta-decay SFX (maybe a popping sound?)
+- Water dropplet sound (when proton goes into collection bucket for extra ball)
+- launch sound
