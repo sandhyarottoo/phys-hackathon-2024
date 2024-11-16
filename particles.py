@@ -9,16 +9,16 @@ dt = 0.001
 class Particle(pygame.sprite.Sprite):
     neutrinos = 0
     neutrons = 0
-    def __init__(self,type,BoardWidth,BoardHeight,pos,vel,random = True):
+    def __init__(self,type,BoardWidth,BoardHeight,pos=None,vel = None,random = True):
         self.type = type
-        if not random:
+        if random:
             #if the particle did not come from a reaction, place it at a random spot
             self.pos = pygame.Vector2(np.random.rand()*BoardWidth,np.random.rand()*BoardHeight)
-            self.vel = vel
+            self.vel = pygame.Vector2(2,2)
         else:
             #if the particle did come from a reaction, it has to start at a certain spot
             self.pos = pos
-            self.vel = pygame.Vector2(2,2)
+            self.vel = vel
 
 
         #initial velocity, dummy variable for now
