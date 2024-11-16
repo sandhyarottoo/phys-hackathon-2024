@@ -7,19 +7,14 @@ from globals import *
 class Particle(pygame.sprite.Sprite):
     neutrinos = 0
     neutrons = 0
-    def __init__(self,type,pos=None,vel = None,random = True):
+    def __init__(self,type,pos,vel = None):
         self.type = type
-        if random:
-            #if the particle did not come from a reaction, place it at a random spot
-            self.pos = pygame.Vector2(np.random.rand()*boardWidth,np.random.rand()*boardHeight)
-            self.vel = pygame.Vector2(2,2)
+        self.pos = pos
+        if vel == None:
+            self.vel = pygame.Vector2(np.random.rand()*10,np.random.rand()*10)
         else:
-            #if the particle did come from a reaction, it has to start at a certain spot
-            self.pos = pos
             self.vel = vel
 
-
-        #initial velocity, dummy variable for now
         
         self.acc = pygame.Vector2(0,0)
 
@@ -78,11 +73,12 @@ class Particle(pygame.sprite.Sprite):
     def computeForce(self,particle):
         force = pygame.Vector2(0,0)
         r = self.pos-particle.pos
+        r_norm = np.sqrt(r.x**2 + r.y**2)
         if (self.type == 'neutron' or self.type == 'proton') and (particle.type == 'proton' or particle.type == 'neutron'):
-                force += StrongForce(r)*r.normalize()
+                force += StrongForce(r_norm)*r.normalize()
 
-        if (self.type == 'electron' or self.type == 'proton') and (particle.type == 'electron' or particle.type == 'proton'):
-            force += CoulombForce(r)*r.normalize()
+        # if (self.type == 'electron' or self.type == 'proton') and (particle.type == 'electron' or particle.type == 'proton'):
+        #     force += CoulombForce(r)*r.normalize()
         return force
 
 
@@ -156,3 +152,16 @@ class Player(Particle):
         self.acc = pygame.Vector2(0, 0)  # reset acceleration
         self.acc += self.computeForce(particle)
         self.rect.center = self.pos
+
+
+
+
+
+class HiggsDisturbance(Particle):
+
+    def __init__(self,pos):
+        super.__init__(type = 'Higgs',pos = pos,vel = pygame.Vector2(0,0))
+
+        
+        
+    
