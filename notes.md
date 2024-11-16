@@ -9,3 +9,5 @@
 
 - Neutrons and protons interact through the strong force (Yukawa potential)
 - Reflective boundary conditions
+
+-Since the nuclear force is short range, you only feel the effects of the particles within your grid
