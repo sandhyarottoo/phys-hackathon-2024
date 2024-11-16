@@ -43,7 +43,7 @@ class Particle(pygame.sprite.Sprite):
 
         #update neutrino, they don't interact so we just need to check for absorption
         if self.type == 'neutrino':
-            if pygame.sprite.collide_mask(self,particle) and isinstance(particle,Player):
+            if pygame.sprite.collide_mask(self,particle) and particle.type == 'proton':
                 self.isAbsorbed == True
                 Particle.neutrinos -= 1
                 self.kill()
