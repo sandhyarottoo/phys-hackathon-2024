@@ -3,17 +3,18 @@ import numpy as np
 import pygame
 from forces import *
 from player import *
+from globals import *
 
 dt = 0.001
 
 class Particle(pygame.sprite.Sprite):
     neutrinos = 0
     neutrons = 0
-    def __init__(self,type,BoardWidth,BoardHeight,pos=None,vel = None,random = True):
+    def __init__(self,type,pos=None,vel = None,random = True):
         self.type = type
         if random:
             #if the particle did not come from a reaction, place it at a random spot
-            self.pos = pygame.Vector2(np.random.rand()*BoardWidth,np.random.rand()*BoardHeight)
+            self.pos = pygame.Vector2(np.random.rand()*boardWidth,np.random.rand()*boardHeight)
             self.vel = pygame.Vector2(2,2)
         else:
             #if the particle did come from a reaction, it has to start at a certain spot
