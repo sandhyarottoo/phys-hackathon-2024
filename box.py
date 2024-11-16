@@ -96,11 +96,11 @@ class Box():
 
     def wallCollide(self, particle):
         if particle.rect.left < 0 or particle.rect.right > SCREEN_WIDTH:
-            particle.vel.x = particle.vel.x * -1
+            particle.vel.x = particle.vel.x * -0.9
             return True
     
         if particle.rect.top < 0 or particle.rect.bottom > SCREEN_HEIGHT:
-            particle.vel.y = particle.vel.y * -1
+            particle.vel.y = particle.vel.y * -0.9
             return True
         
         return False
