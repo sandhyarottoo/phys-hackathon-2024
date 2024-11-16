@@ -29,27 +29,27 @@ class Box():
                 
             else:
                 x, y = None # distribution() to be implemented
-            self.particles.append(Particle(type, pygame.Vector2(x, y), pygame.Vector2(0,0), random=False))
+            self.particles.append(Particle(type, pygame.Vector2(x, y), pygame.Vector2(0,0)))
     
         
     def isEdgeBox(self):
         return self.index % NBOX_X == 0 or self.index % NBOX_X == NBOX_X - 1 or self.index < NBOX_X or self.index >= NBOX_X * (NBOX_Y - 1)
         
-    def updateBox(self):
+    def updateBox(self, dt):
         neighbors = self.getAdjBoxes()
         for particle in self.particles:
             self.wallCollide(particle)
             for neighbor in neighbors:
                 for other_particle in neighbor.particles:
                     if particle != other_particle:
-                        particle.update(other_particle)
+                        particle.update(other_particle, dt)
                         if (particle.type == 'electron' or particle.type == 'proton') and particle.electroncapture:
                             x, y, velx, vely = particle.pos.x, particle.pos.y, particle.vel.x, particle.vel.y
                             x1, y1, velx1, vely1 = other_particle.pos.x, other_particle.pos.y, other_particle.vel.x, other_particle.vel.y
                             self.removeParticle(particle)
                             self.removeParticle(other_particle)
-                            self.addParticle(Particle('neutron', pygame.Vector2(x, y), pygame.Vector2(velx, vely), random=False))
-                            self.addParticle(Particle('neutrino', pygame.Vector2(x1, y1), pygame.Vector2(velx1, vely1), random=False))
+                            self.addParticle(Particle('neutron', pygame.Vector2(x, y), pygame.Vector2(velx, vely)))
+                            self.addParticle(Particle('neutrino', pygame.Vector2(x1, y1), pygame.Vector2(velx1, vely1)))
             self.checkParticles()
         
     def getAdjBoxes(self):
@@ -111,6 +111,7 @@ class Box():
         for particle in self.particles:
             box_x, box_y, box_w, box_h = self.rect
             
+            collides = False
             if self.isEdgeBox():
                 collides = self.wallCollide(particle)
                     
@@ -138,7 +139,7 @@ class Box():
             self.removeParticle(particle)
         
     def addParticle(self, particle):
-        if not particle.updated and particle not in self.particles:
+        if particle not in self.particles:
             self.particles.append(particle)
             particle.updated = True
         
@@ -151,8 +152,8 @@ class Box():
             if particle.type == 'neutron':
                 x, y, velx, vely = particle.pos.x, particle.pos.y, particle.vel.x, particle.vel.y
                 self.removeParticle(particle)
-                boxes[self.index].addParticle(Particle('neutrino', pygame.Vector2(x, y), pygame.Vector2(velx, vely), random=False)) # to change... maybe
-                boxes[self.index].addParticle(Particle('electron', pygame.Vector2(x, y), pygame.Vector2(-1*velx, -1*vely), random=False)) # to change... maybe
+                boxes[self.index].addParticle(Particle('neutrino', pygame.Vector2(x, y), pygame.Vector2(velx, vely))) # to change... maybe
+                boxes[self.index].addParticle(Particle('electron', pygame.Vector2(x, y), pygame.Vector2(-1*velx, -1*vely))) # to change... maybe
                 Player.respawn = False
                 return True
         return False
@@ -168,7 +169,7 @@ class Box():
 # getting all boxes
 boxes = []
 for j in range(NBOX_Y):
-    n_particles = j
+    n_particles = j % 2
     for i in range(NBOX_X):
         box = Box(i*BOX_WIDTH, j*BOX_HEIGHT, BOX_WIDTH, BOX_HEIGHT, i+j*NBOX_X)
         box.initializeParticles(n_particles)

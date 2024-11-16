@@ -6,12 +6,14 @@ from GLOBVAR import *
 import forces
 import pygame
 
-keys = pygame.key.get_pressed()
 bucket = Bucket()
 canon = Canon()
-player = Player(keys,bucket,canon)
 
 pygame.init()
+
+keys = pygame.key.get_pressed()
+player = Player(keys,bucket,canon)
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 clock = pygame.time.Clock()
@@ -22,7 +24,7 @@ while running:
     screen.fill((0, 0, 0))
     
     for box in boxes:
-        box.updateBox()
+        box.updateBox(dt)
         box.draw(screen, signal_content=True)
     
     for event in pygame.event.get():
