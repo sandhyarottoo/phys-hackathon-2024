@@ -49,7 +49,7 @@ class Particle(pygame.sprite.Sprite):
 
         #update neutron, if it collides its velocity changes
         if self.type == 'neutron':
-            if pygame.sprite.collide_mask(self,particle):
+            if pygame.sprite.collide_mask(self,particle) and particle.type != 'neutrino':
                 self.vel.x *= -0.8
                 self.vel.y *= -0.8
 
@@ -57,7 +57,7 @@ class Particle(pygame.sprite.Sprite):
             self.acc += self.computeForce(particle)
 
         if self.type == 'electron':
-            if pygame.sprite.collide_mask(self,particle) and isinstance(particle,Player):
+            if pygame.sprite.collide_mask(self,particle) and particle.type == 'proton':
                 self.electroncapture = True
             self.acc += self.computeForce(particle)
  
@@ -127,7 +127,7 @@ class Player(Particle):
         # detect collisions and apply responses
         if pygame.sprite.collide_mask(self, particle):
             # reflect off of neutrons
-            if particle.type == 'neutron':
+            if particle.type == 'neutron' or particle.type == 'Higgs':
                 self.vel.x *= -0.8
                 self.vel.y *= -0.8
 
@@ -161,7 +161,13 @@ class HiggsDisturbance(Particle):
 
     def __init__(self,pos):
         super.__init__(type = 'Higgs',pos = pos,vel = pygame.Vector2(0,0))
+        self.collisioncounter = 0
 
-        
+    def update(self,particle):
+         if pygame.sprite.collide_mask(self,particle):
+             self.collisioncounter += 1
+
+         if self.collisioncounter > 3:
+             self.kill()   
         
     

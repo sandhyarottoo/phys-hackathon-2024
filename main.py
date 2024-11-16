@@ -1,11 +1,15 @@
-from player import Player
-from particles import Particle
+
+from particles import *
+from pegglestuff import *
 from box import Box, boxes
 from GLOBVAR import *
 import forces
 import pygame
-        
-player = Player(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, 20, 20)
+
+keys = pygame.key.get_pressed()
+bucket = Bucket()
+canon = Canon()
+player = Player(keys,bucket,canon)
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))

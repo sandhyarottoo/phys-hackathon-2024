@@ -3,13 +3,14 @@ import pygame
 
 from forces import *
 from particles import *
+from globals import *
 
 
 class Player(pygame.sprite.Sprite):
     lives = 3
-    def __init__(self,angle,boardWidth,boardHeight,dt,vel = 10):
+    def __init__(self,angle):
         self.angle = angle
-        self.initial_speed = vel
+        self.initial_speed = 10
         #start the particle at the top
         self.pos = pygame.Vector2(boardWidth //2, 0)
         self.acc = pygame.Vector2(0,0)
@@ -23,12 +24,13 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.respawn = False
+        self.electroncapture = False
 
     # def start(self,keys):
     #     if keys[pygame.K_SPACE]:
 
 
-    def update(self,keys,particle,dt,bucket,walls,canon,boardWidth,boardHeight):
+    def update(self,keys,particle,dt,bucket,walls,canon):
 
         #this is for the start of the game, move the canon around to choose angle of initial velocity
         if keys[pygame.K_LEFT]:
@@ -54,7 +56,7 @@ class Player(pygame.sprite.Sprite):
                 Player.lives -= 1
                 if Player.lives != 0:
                     self.respawn = True
-                particle.electroncapture == True
+                self.electroncapture = True
 
 
         #reflect off the walls
@@ -66,14 +68,13 @@ class Player(pygame.sprite.Sprite):
         #get a free ball if you collide with the bucket
         if pygame.sprite.collide_mask(self,bucket):
             Player.lives += 1
-            self.respawn == True
+            self.respawn = True
 
         #respawn at the top of the board again
         if self.respawn:
             self.pos = pygame.Vector2(boardWidth //2, 0)
             self.respawn = False
         
-
         # if Player.lives == 0:
             #condition to end game
 
