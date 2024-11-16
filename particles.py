@@ -66,8 +66,6 @@ class Particle(pygame.sprite.Sprite):
 
         self.rect.center = self.pos
 
-        # if Particle.neutrinos == 0:
-            # end condition
 
 
     def computeForce(self,particle):
@@ -88,7 +86,7 @@ class Player(Particle):
     lives = 3
     
     def __init__(self,keys,bucket,canon):
-        super().__init__(type='proton', pos=pygame.Vector2(SCREEN_WIDTH // 2, 0), random=False)
+        super().__init__(type='proton', pos=pygame.Vector2(SCREEN_WIDTH // 2, 0))
         self.angle = 0
         self.initial_speed = 10
         self.acc = pygame.Vector2(0, 0)
