@@ -13,45 +13,65 @@ class Player(pygame.sprite.Sprite):
         #start the particle at the top
         self.pos = pygame.Vector2(boardWidth //2, 0)
         self.acc = pygame.Vector2(0,0)
-        self.radius = 4
+
+        #these are whatever
+        self.radius = 2
         self.color = (50, 50, 60)
+
+        #initialize the image and rect 
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
+        self.respawn = False
 
     # def start(self,keys):
     #     if keys[pygame.K_SPACE]:
 
 
-    def update(self,keys,particle,dt,bucket,walls,canon):
+    def update(self,keys,particle,dt,bucket,walls,canon,boardWidth,boardHeight):
+
+        #this is for the start of the game, move the canon around to choose angle of initial velocity
         if keys[pygame.K_LEFT]:
             self.angle += 1
             canon.angle += 1
         if keys[pygame.K_RIGHT]:
             self.angle -= 1
             canon.angle += 1
+
+        #shoot the player
         if keys[pygame.K_SPACE]:
-            self.vel = pygame.Vector2(self.initial_speed*np.sin(self.angle),self.initial_speed*np.cos(self.angle))
+            self.vel = pygame.Vector2(self.initial_speed*np.cos(self.angle),self.initial_speed*np.sin(self.angle))
         
         if pygame.sprite.collide_mask(self,particle):
-            if particle.type == 'neutrino':
-                particle.kill()
+
+            #reflect off of neutrons
             if particle.type == 'neutron':
                 self.vel.x*= -0.8
                 self.vel.y*= -0.8
+
+            #get killed by electrons
             if particle.type == 'electron':
                 Player.lives -= 1
+                if Player.lives != 0:
+                    self.respawn = True
                 particle.electroncapture == True
-                self.kill()
+
+
+        #reflect off the walls
         for wall in walls:
             if pygame.sprite.collide_mask(self,wall):
                 self.vel.x *= -0.8
                 self.vel.y *= -0.8
 
+        #get a free ball if you collide with the bucket
         if pygame.sprite.collide_mask(self,bucket):
-            bucket.freeball == True
             Player.lives += 1
-            self.kill()
+            self.respawn == True
+
+        #respawn at the top of the board again
+        if self.respawn:
+            self.pos = pygame.Vector2(boardWidth //2, 0)
+            self.respawn = False
         
 
         # if Player.lives == 0:
@@ -61,6 +81,7 @@ class Player(pygame.sprite.Sprite):
         self.vel += self.acc*dt
         self.acc*=0
         self.acc += self.computeForce(particle)
+
 
         self.rect.center = self.pos
 
