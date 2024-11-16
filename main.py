@@ -31,3 +31,8 @@ while running:
     
     pygame.display.flip()
     dt = clock.tick(60) / 1000
+
+
+
+    # if Particle.neutrinos == 0:
+        # end condition
