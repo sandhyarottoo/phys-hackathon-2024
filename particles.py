@@ -4,20 +4,25 @@ import pygame
 from forces import *
 from player import *
 
+dt = 0.001
+
 class Particle(pygame.sprite.Sprite):
     neutrinos = 0
     neutrons = 0
-    def __init__(self,type,BoardWidth,BoardHeight,pos,random = True):
+    def __init__(self,type,BoardWidth,BoardHeight,pos,vel,random = True):
         self.type = type
-        if random:
+        if not random:
             #if the particle did not come from a reaction, place it at a random spot
             self.pos = pygame.Vector2(np.random.rand()*BoardWidth,np.random.rand()*BoardHeight)
+            self.vel = vel
         else:
             #if the particle did come from a reaction, it has to start at a certain spot
             self.pos = pos
+            self.vel = pygame.Vector2(2,2)
+
 
         #initial velocity, dummy variable for now
-        self.vel = pygame.Vector2(2,2)
+        
         self.acc = pygame.Vector2(0,0)
 
         #should this be a sub class?
@@ -28,33 +33,25 @@ class Particle(pygame.sprite.Sprite):
             self.isAbsorbed == False
             Particle.neutrinos += 1
 
-    def update(self,player,particle,dt,neutrons,neutrinos,BoardWidth,BoardHeight):
+    def update(self,particle):
         #neutrons and neutrinos are groups of particles
 
         #update neutrino, they don't interact so we just need to check for absorption
         if self.type == 'neutrino':
-            if pygame.sprite.collide_mask(self,player):
+            if pygame.sprite.collide_mask(self,particle) and isinstance(particle,Player):
                 self.isAbsorbed == True
                 Particle.neutrinos -= 1
                 self.kill()
 
         #update neutron, if it collides its velocity changes
         if self.type == 'neutron':
-            if pygame.sprite.collide_mask(self,player):
+            if pygame.sprite.collide_mask(self,particle):
                 self.vel.x *= -0.8
                 self.vel.y *= -0.8
 
             #compute strong force  
             self.acc += self.computeForce(particle)
 
-            #self.betadecay gets set to true for a random neutron when player lands in the bucket
-            if self.betadecay:
-                neutrino = Particle('neutrino',BoardWidth,BoardHeight,self.pos,random =False)
-                neutrinos.add(neutrino)
-
-                #also create an electron
-
-                self.kill()
 
         self.pos += self.vel * dt
         self.vel += self.acc * dt
