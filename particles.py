@@ -2,7 +2,7 @@
 import numpy as np
 import pygame
 from forces import *
-from globals import *
+from GLOBVAR import *
 
 class Particle(pygame.sprite.Sprite):
     neutrinos = 0
@@ -37,7 +37,7 @@ class Particle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
 
-    def update(self,particle):
+    def update(self,particle,dt):
         #neutrons and neutrinos are groups of particles
 
         #update neutrino, they don't interact so we just need to check for absorption
@@ -88,7 +88,7 @@ class Player(Particle):
     lives = 3
     
     def __init__(self,keys,bucket,canon):
-        super().__init__(type='proton', pos=pygame.Vector2(boardWidth // 2, 0), random=False)
+        super().__init__(type='proton', pos=pygame.Vector2(SCREEN_WIDTH // 2, 0), random=False)
         self.angle = 0
         self.initial_speed = 10
         self.acc = pygame.Vector2(0, 0)
@@ -107,7 +107,7 @@ class Player(Particle):
         self.bucket = bucket
         self.canon = canon
 
-    def update(self, particle):
+    def update(self, particle,dt):
         keys = self.keys
         bucket = self.bucket
         canon = self.canon
@@ -145,7 +145,7 @@ class Player(Particle):
 
         # respawn if needed
         if self.respawn:
-            self.pos = pygame.Vector2(boardWidth // 2, 0)
+            self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 0)
 
         self.pos += self.vel * dt
         self.vel += self.acc * dt
@@ -171,3 +171,4 @@ class HiggsDisturbance(Particle):
              self.kill()   
         
     
+
