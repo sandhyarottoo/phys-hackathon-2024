@@ -34,6 +34,15 @@ class Particle(pygame.sprite.Sprite):
             self.isAbsorbed == False
             Particle.neutrinos += 1
 
+                #these are whatever
+        self.radius = 2
+        self.color = (50, 50, 60)
+
+        #initialize the image and rect 
+        self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+
     def update(self,particle):
         #neutrons and neutrinos are groups of particles
 
@@ -57,7 +66,7 @@ class Particle(pygame.sprite.Sprite):
         self.pos += self.vel * dt
         self.vel += self.acc * dt
 
-
+        self.rect.center = self.pos
 
         # if Particle.neutrinos == 0:
             # end condition
