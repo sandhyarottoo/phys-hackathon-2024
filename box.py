@@ -121,6 +121,7 @@ class Box():
             if self.isBottomBox() and particle.is_player:
                 Player.lives -= 1
                 Player.respawn = True
+                Player.start = True
                 self.removeParticle(particle)
             
             particle.vel.y = particle.vel.y * -1

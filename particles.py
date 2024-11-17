@@ -19,27 +19,31 @@ class Particle(pygame.sprite.Sprite):
 
         
         self.acc = pygame.Vector2(0,0)
-
+        
         #should this be a sub class?
         if self.type == 'neutron':
             self.betadecay = False
             Particle.neutrons += 1
             self.color = (150, 150, 150)
+            self.is_player = False
         if self.type == 'neutrino':
             self.isAbsorbed = False
             Particle.neutrinos += 1
             self.color = (200, 50, 50)
+            self.is_player = False
         if self.type == 'electron':
             self.electroncapture = False
             self.color = (100, 100, 200)
+            self.is_player = False
 
         #these are whatever
-        self.radius = 8
+        self.radius = 12
 
         #initialize the image and rect 
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, screen, particle, keys, dt):
         if self.is_player:
@@ -59,17 +63,20 @@ class Particle(pygame.sprite.Sprite):
             if Player.start:
                 self.acc = pygame.Vector2(0,0)
                 if  keys[pygame.K_SPACE]:
-                    self.vel = pygame.Vector2(self.initial_speed * np.cos(self.angle), 
-                                            -1*self.initial_speed * np.sin(self.angle))
+                    self.vel = pygame.Vector2(1*self.initial_speed * np.cos(np.deg2rad(self.angle)), 
+                                            1*self.initial_speed * np.sin(np.deg2rad(self.angle)))
                     Player.start = False
 
             # detect collisions and apply responses
             if pygame.sprite.collide_mask(self, particle):
                 # reflect off of neutrons
                 if particle.type == 'neutron' or particle.type == 'Higgs':
+                    print('wooo collision')
                     self.vel.x *= -0.8
                     self.vel.y *= -0.8
 
+                if particle.type == 'neutrino':
+                    print('neutrino')
                 # get "killed" by electrons
                 if particle.type == 'electron':
                     Player.lives -= 1
@@ -84,15 +91,10 @@ class Particle(pygame.sprite.Sprite):
                 Player.respawn = True
                 Player.start = True
 
-            #die if u cross the bottom wall
-            if self.pos.y > SCREEN_HEIGHT:
-                Player.lives -= 1
-                Player.respawn = True
-                Player.start = True
-
             # respawn if needed
             if Player.respawn:
                 self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 20)
+                Player.respawn = False
 
             self.pos += self.vel * dt
             self.vel += self.acc * dt
@@ -105,14 +107,16 @@ class Particle(pygame.sprite.Sprite):
 
         #update neutrino, they don't interact so we just need to check for absorption
         if self.type == 'neutrino':
-            if pygame.sprite.collide_mask(self,particle) and particle.type == 'proton':
-                self.isAbsorbed == True
+            if pygame.sprite.collide_mask(self,particle) and particle.is_player:
+                print('Player collided with neutrino')
+                self.isAbsorbed = True
                 Particle.neutrinos -= 1
                 self.kill()
 
         #update neutron, if it collides its velocity changes
         if self.type == 'neutron':
             if pygame.sprite.collide_mask(self,particle) and particle.type != 'neutrino':
+                print('Neutron collided')
                 self.vel.x *= -0.8
                 self.vel.y *= -0.8
 
@@ -164,7 +168,7 @@ class Player(Particle):
 
         # these are specific to Player
         self.radius = 10
-        self.color = (250, 10, 10)
+        self.color = (10, 10, 250)
         
         # initialize the image and rect
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)
