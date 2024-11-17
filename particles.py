@@ -23,15 +23,17 @@ class Particle(pygame.sprite.Sprite):
         if self.type == 'neutron':
             self.betadecay = False
             Particle.neutrons += 1
+            self.color = (150, 150, 150)
         if self.type == 'neutrino':
             self.isAbsorbed = False
             Particle.neutrinos += 1
+            self.color = (200, 50, 50)
         if self.type == 'electron':
             self.electroncapture = False
+            self.color = (100, 100, 200)
 
         #these are whatever
-        self.radius = 2
-        self.color = (50, 50, 60)
+        self.radius = 8
 
         #initialize the image and rect 
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)

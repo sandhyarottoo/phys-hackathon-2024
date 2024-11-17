@@ -27,9 +27,12 @@ class Box():
                 xs.append(x)
                 ys.append(y)
                 
+                velx = 3*n.random.randn(1)
+                vely = 3*n.random.randn(1)
+                
             else:
                 x, y = None # distribution() to be implemented
-            self.particles.append(Particle(type, pygame.Vector2(x, y), pygame.Vector2(0.2,0.2)))
+            self.particles.append(Particle(type, pygame.Vector2(x, y), pygame.Vector2(velx,vely)))
     
         
     def isEdgeBox(self):
@@ -43,7 +46,7 @@ class Box():
                 for other_particle in neighbor.particles:
                     if particle != other_particle:
                         particle.update(other_particle, dt)
-                        pygame.draw.rect(screen, (150, 150, 150), particle.rect)
+                        pygame.draw.rect(screen, particle.color, particle.rect)
                         if (particle.type == 'electron' or particle.type == 'proton') and particle.electroncapture:
                             x, y, velx, vely = particle.pos.x, particle.pos.y, particle.vel.x, particle.vel.y
                             x1, y1, velx1, vely1 = other_particle.pos.x, other_particle.pos.y, other_particle.vel.x, other_particle.vel.y
@@ -96,12 +99,24 @@ class Box():
         return index in adj_indices    
 
     def wallCollide(self, particle):
-        if particle.rect.left < 0 or particle.rect.right > SCREEN_WIDTH:
-            particle.vel.x = particle.vel.x * -0.9
+        if particle.rect.left < 0:
+            particle.vel.x = particle.vel.x * -1
+            particle.rect.left = 0
             return True
-    
-        if particle.rect.top < 0 or particle.rect.bottom > SCREEN_HEIGHT:
-            particle.vel.y = particle.vel.y * -0.9
+
+        if particle.rect.right > SCREEN_WIDTH:
+            particle.vel.x = particle.vel.x * -1
+            particle.rect.right = SCREEN_WIDTH
+            return True
+        
+        if particle.rect.top < 0:
+            particle.vel.y = particle.vel.y * -1
+            particle.rect.top = 0 
+            return True
+        
+        if particle.rect.bottom > SCREEN_HEIGHT:
+            particle.vel.y = particle.vel.y * -1
+            particle.rect.bottom = SCREEN_HEIGHT - 1
             return True
         
         return False
@@ -164,13 +179,13 @@ class Box():
         
     def draw(self, screen, color=(255, 255, 255), signal_content=False):
         if signal_content and self.contains_particles():
-                color = (200, 120, 120)
+                color = (75, 50, 50)
         pygame.draw.rect(screen, color, self.rect)
         
 # getting all boxes
 boxes = []
 for j in range(NBOX_Y):
-    n_particles = j % 2
+    n_particles = 5
     for i in range(NBOX_X):
         box = Box(i*BOX_WIDTH, j*BOX_HEIGHT, BOX_WIDTH, BOX_HEIGHT, i+j*NBOX_X)
         box.initializeParticles(n_particles)
