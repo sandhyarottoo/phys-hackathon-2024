@@ -19,6 +19,7 @@ class Particle(pygame.sprite.Sprite):
         self.type = type
         self.pos = pos
         self.is_player = False
+        self.betadecay = False
         
         # Load images for each particle type
         neutrino_image = pygame.image.load("Images/Neutrino.png")
