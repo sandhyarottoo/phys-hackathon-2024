@@ -72,18 +72,18 @@ class Particle(pygame.sprite.Sprite):
                 if particle.type == 'electron':
                     Player.lives -= 1
                     if Player.lives != 0:
-                        self.respawn = True
+                        Player.respawn = True
                     self.electroncapture = True
 
             # gain a life if colliding with the bucket
             if pygame.sprite.collide_mask(self, bucket):
                 Player.lives += 1
-                self.respawn = True
+                Player.respawn = True
 
             #die if u cross the bottom wall
             if self.pos > SCREEN_HEIGHT:
                 Player.lives -= 1
-                self.respawn = True
+                Player.respawn = True
 
             # respawn if needed
             if self.respawn:
@@ -146,7 +146,7 @@ class Particle(pygame.sprite.Sprite):
     
 class Player(Particle):
     lives = 3
-    
+    respawn = False
     def __init__(self,bucket,canon):
         super().__init__(type='proton', pos=pygame.Vector2(SCREEN_WIDTH // 2, 0))
         self.is_player = True
@@ -162,7 +162,6 @@ class Player(Particle):
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
-        self.respawn = False
         self.electroncapture = False
         self.bucket = bucket
         self.canon = canon
