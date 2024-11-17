@@ -184,6 +184,8 @@ def runGame():
         canon.update(player, screen)
         bucket.update(player,screen,dt)
         score.update()
+        screen.blit(score.lives, (SCREEN_WIDTH/2+40, 20))
+
 
         #win condition
         if Particle.neutrinos == 0:
