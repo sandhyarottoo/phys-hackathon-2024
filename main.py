@@ -68,6 +68,7 @@ piotrfont = pygame.font.SysFont('arial', 12)
 def runIntro():
     # Load the background image
     background_image = pygame.image.load("Images/Menu_Title (1).png")
+
     
     # Create buttons with the correct positions and sizes, matching the image design
     startButton = Button(SCREEN_WIDTH / 3 - 15, SCREEN_HEIGHT / 2 - 125, 305, 70, runGame)    
@@ -117,26 +118,41 @@ def runFAQ():
     faq = True
     menuButton = Button(20, 10, 140, 50, runIntro, "Menu", font)
     
-    # main text
     inst_title = pygame.font.SysFont('verdana', 100).render('FAQ', False, (250, 220, 210))
-
-    inst_text = "Welcome to NUCLIO, a nuclear twist on the classic game Peggle!\n\n"\
-                "GAME: Eliminate all neutrinos (red particules) while also collecting as many points as possible!\n\n"\
-                "HOW TO PLAY: Use the arrow keys to adjust the launch angle your proton, and press the SPACE-bar to launch!\n\n"\
-                "Forces: Note that the strong nuclear force is acting on the particles, so they will attract or repel each other, depending on their relative distances. More info to come...\n\n" 
+    
+    inst_text = "Welcome to NUCLIO, a nuclear\n twist on the classic game Peggle!\n\n"\
+                "GAME: Eliminate all neutrinos\n (red particules) \nwhile also collecting as\n many points as possible!\n"\
+                "HOW TO PLAY:\n Use the arrow keys to\n adjust the launch angle your\n proton, and press the SPACE-bar\n to launch!\n\n"\
+                "Forces:\n Note that the strong \nnuclear force is acting \non the particles, so \nthey will attract or repel each other,\n depending on their relative distances.\n More info to come...\n\n"
+    
     inst_font = pygame.font.SysFont('verdana', 20)
+    
+    info_image = pygame.image.load("Images/Menu_Info.png")
+    
+    inst_text_lines = inst_text.split('\n')
     
     while faq:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 runEXIT()
+        
         screen.fill((0, 0, 0))
-        screen.blit(inst_title, (SCREEN_WIDTH/2 - inst_title.get_width()/2, SCREEN_HEIGHT*(1/10)))
-        blit_text(screen, inst_text, (15, 275), inst_font, (250, 200, 200))
-        # screen.blit(instructions, (WIDTH/2-instructions.get_width()/2, HEIGHT/2-instructions.get_height()/2))
+        
+        screen.blit(info_image, (SCREEN_WIDTH / 4, 0)) 
+        
+        screen.blit(inst_title, (SCREEN_WIDTH / 2 - inst_title.get_width() / 2, SCREEN_HEIGHT * (1 / 10)))
+        
+        y_offset = 175
+        for line in inst_text_lines:
+            inst_text_render = inst_font.render(line, False, (0, 0, 0))
+            screen.blit(inst_text_render, (SCREEN_WIDTH / 2 - inst_text_render.get_width() / 2, y_offset))
+            y_offset += inst_text_render.get_height() + 5
+        
         menuButton.process()
+        
         pygame.display.flip()
         clock.tick(60)
+
 
 def runGame():
     global dt
