@@ -55,11 +55,13 @@ class Particle(pygame.sprite.Sprite):
 
             # print("angle: ", self.angle)
             
-            
             # shoot the player
-            if keys[pygame.K_SPACE]:
-                self.vel = pygame.Vector2(self.initial_speed * np.cos(self.angle), 
-                                        self.initial_speed * np.sin(self.angle))
+            if Player.start:
+                self.acc = pygame.Vector2(0,0)
+                if  keys[pygame.K_SPACE]:
+                    self.vel = pygame.Vector2(self.initial_speed * np.cos(self.angle), 
+                                            -1*self.initial_speed * np.sin(self.angle))
+                    Player.start = False
 
             # detect collisions and apply responses
             if pygame.sprite.collide_mask(self, particle):
@@ -73,26 +75,30 @@ class Particle(pygame.sprite.Sprite):
                     Player.lives -= 1
                     if Player.lives != 0:
                         Player.respawn = True
+                        Player.start = True
                     self.electroncapture = True
 
             # gain a life if colliding with the bucket
             if pygame.sprite.collide_mask(self, bucket):
                 Player.lives += 1
                 Player.respawn = True
+                Player.start = True
 
             #die if u cross the bottom wall
             if self.pos.y > SCREEN_HEIGHT:
                 Player.lives -= 1
                 Player.respawn = True
+                Player.start = True
 
             # respawn if needed
             if Player.respawn:
-                self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 0)
+                self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 20)
 
             self.pos += self.vel * dt
             self.vel += self.acc * dt
             self.acc = pygame.Vector2(0, 0)  # reset acceleration
-            self.acc += self.computeForce(particle)
+            if not Player.start:
+                self.acc += self.computeForce(particle)
             self.rect.center = self.pos
         
         #neutrons and neutrinos are groups of particles
@@ -147,16 +153,18 @@ class Particle(pygame.sprite.Sprite):
 class Player(Particle):
     lives = 3
     respawn = False
+    start = True
     def __init__(self,bucket,canon):
-        super().__init__(type='proton', pos=pygame.Vector2(SCREEN_WIDTH // 2, 0))
+        super().__init__(type='proton', pos=pygame.Vector2(SCREEN_WIDTH // 2, 20))
         self.is_player = True
         self.angle = 0
         self.initial_speed = 10
         self.acc = pygame.Vector2(0, 0)
+        self.vel = pygame.Vector2(0,0)
 
         # these are specific to Player
-        self.radius = 2
-        self.color = (50, 50, 60)
+        self.radius = 10
+        self.color = (250, 10, 10)
         
         # initialize the image and rect
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)
@@ -165,6 +173,7 @@ class Player(Particle):
         self.electroncapture = False
         self.bucket = bucket
         self.canon = canon
+
 
     # def update(self, particle, keys, dt):
     #     bucket = self.bucket

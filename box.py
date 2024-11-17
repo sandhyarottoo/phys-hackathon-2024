@@ -119,8 +119,8 @@ class Box():
         
         if particle.rect.bottom > SCREEN_HEIGHT:
             if self.isBottomBox() and particle.is_player:
-                particle.lives -= 1
-                particle.respawn = True
+                Player.lives -= 1
+                Player.respawn = True
                 self.removeParticle(particle)
             
             particle.vel.y = particle.vel.y * -1
