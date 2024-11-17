@@ -56,3 +56,9 @@ class Canon(pygame.sprite.Sprite):
 
 
 
+class lives():
+    def __init__(self):
+        self.lives = pygame.font.SysFont('verdana', 40).render(f"Remaining lives: {Player.lives}", False, (0,250,0))
+
+    def update(self):
+        self.lives = pygame.font.SysFont('verdana', 40).render(f"Remaining lives: {Player.lives}", False, (0,250,0))

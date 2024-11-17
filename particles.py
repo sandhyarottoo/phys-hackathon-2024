@@ -127,10 +127,10 @@ class Particle(pygame.sprite.Sprite):
                     Player.start = True
                     self.vel = pygame.Vector2(0,0)
 
-                # respawn if needed
-                if Player.respawn:
-                    self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 12)
-                    Player.respawn = False
+                # # respawn if needed
+                # if Player.respawn:
+                #     self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 12)
+                #     Player.respawn = False
 
                 # self.pos += self.vel * dt
                 # self.vel += self.acc * dt
