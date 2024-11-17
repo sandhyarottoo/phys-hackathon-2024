@@ -121,7 +121,7 @@ def runFAQ():
     inst_title = pygame.font.SysFont('verdana', 100).render('FAQ', False, (250, 220, 210))
     
     inst_text = "Welcome to NUCLIO, a nuclear\n twist on the classic game Peggle!\n\n"\
-                "GAME: Eliminate all neutrinos\n (red particules) \nwhile also collecting as\n many points as possible!\n"\
+                "GAME: Eliminate all neutrinos\n (red particles) \nwhile also collecting as\n many points as possible!\n"\
                 "HOW TO PLAY:\n Use the arrow keys to\n adjust the launch angle your\n proton, and press the SPACE-bar\n to launch!\n\n"\
                 "Forces:\n Note that the strong \nnuclear force is acting \non the particles, so \nthey will attract or repel each other,\n depending on their relative distances.\n More info to come...\n\n"
     
