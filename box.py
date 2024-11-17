@@ -1,7 +1,6 @@
 import numpy as n
 import pygame
-from particles import Particle
-from player import Player
+from particles import *
 from GLOBVAR import *
 from electron import Electron
 import torch
@@ -62,12 +61,15 @@ class Box():
                     if particle != other_particle:
                         particle.update(screen, other_particle, keys, dt,electron)
                         
-                        if particle.is_player and particle.respawn:
+                        if particle.is_player and Player.respawn:
                             self.particles.remove(particle)
-                            boxes[0].addParticle(particle)
-                            if particle.betadecay:
-                                self.betaDecay()
-                                particle.betadecay = False
+                            if Player.lives > 0:
+                                boxes[0].addParticle(particle)
+                                Player.respawn = False
+                                Player.start = True
+                                if particle.betadecay:
+                                    self.betaDecay()
+                                    particle.betadecay = False
                                 
                         
                         if (particle.type == 'electron' or particle.type == 'proton') and particle.electroncapture:
@@ -155,13 +157,12 @@ class Box():
                 Player.lives -= 1
                 print(Player.lives)
                 Player.respawn = True
-                Player.start = True
                 particle.pos = pygame.Vector2(SCREEN_WIDTH // 2, 12)
                 particle.vel = pygame.Vector2(0, 0)
                 particle.angle = 0
-                particle.show = False
-                boxes[0].addParticle(particle)
-                self.particles.remove(particle)
+                particle.show = True
+                # boxes[0].addParticle(particle)
+                # self.particles.remove(particle)
             if not particle.is_player:
                 particle.vel.y = particle.vel.y * -1
                 particle.rect.bottom = SCREEN_HEIGHT - 1

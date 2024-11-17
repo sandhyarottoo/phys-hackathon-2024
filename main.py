@@ -165,6 +165,7 @@ def runGame():
     
     # add player to box
     boxes[0].addParticle(player)
+    score = lives()
     
     # game loop
     running = True
@@ -182,6 +183,7 @@ def runGame():
     
         canon.update(player, screen)
         bucket.update(player,screen,dt)
+        score.update()
 
         #win condition
         if Particle.neutrinos == 0:
