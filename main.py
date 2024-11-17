@@ -64,11 +64,15 @@ player = Player(bucket,canon)
 
 piotrfont = pygame.font.SysFont('arial', 12)
 
+intromusic = pygame.mixer.music.load("Music/intro.mp3")
+gamemusic = pygame.mixer.music.load("Music/game.mp3")
+
 # game methods
 def runIntro():
     # Load the background image
     background_image = pygame.image.load("Images/Menu_Title (1).png")
-
+    
+    intromusic.play(-1)
     
     # Create buttons with the correct positions and sizes, matching the image design
     startButton = Button(SCREEN_WIDTH / 3 - 15, SCREEN_HEIGHT / 2 - 125, 305, 70, runGame)    
@@ -77,6 +81,7 @@ def runIntro():
     ifPiotr = Button(SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT * (1 / 3 + 5 / 10), 100, 20, runPiotr)
 
     intro = True
+    # play music
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -163,6 +168,9 @@ def runGame():
     global keys
     global screen
     
+    intromusic.stop()
+    gamemusic.play(-1)
+    
     # add player to box
     boxes[0].addParticle(player)
     score = lives()
@@ -176,6 +184,7 @@ def runGame():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
             running = False
+            gamemusic.stop()
             runIntro()
         
         for box in boxes:
@@ -193,6 +202,7 @@ def runGame():
                 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                gamemusic.stop()
                 running = False
         
         pygame.display.flip()

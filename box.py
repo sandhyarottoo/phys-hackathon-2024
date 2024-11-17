@@ -62,7 +62,7 @@ class Box():
                         particle.update(screen, other_particle, keys, dt,electron)
                         
                         if particle.is_player and Player.respawn:
-                            # self.particles.remove(particle)
+                            self.particles.remove(particle)
                             if Player.lives > 0:
                                 boxes[0].addParticle(particle)
                                 Player.respawn = False
