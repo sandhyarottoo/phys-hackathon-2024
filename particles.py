@@ -134,7 +134,6 @@ class Particle(pygame.sprite.Sprite):
                 #     self.acc += self.computeForce(particle)
                 # self.rect.center = self.pos
                 
-                pygame.draw.rect(screen, particle.color, particle.rect)
 
         
         #neutrons and neutrinos are groups of particles
