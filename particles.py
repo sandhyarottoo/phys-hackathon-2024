@@ -80,6 +80,11 @@ class Particle(pygame.sprite.Sprite):
                 Player.lives += 1
                 self.respawn = True
 
+            #die if u cross the bottom wall
+            if self.pos > SCREEN_HEIGHT:
+                Player.lives -= 1
+                self.respawn = True
+
             # respawn if needed
             if self.respawn:
                 self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 0)
@@ -113,6 +118,11 @@ class Particle(pygame.sprite.Sprite):
                 self.electroncapture = True
             self.acc += self.computeForce(particle)
  
+        speed = np.sqrt(self.vel.x**2 + self.vel.y **2)
+        while speed > 10:
+            self.vel.x*= 0.5
+            self.vel.y *= 0.5
+            speed = np.sqrt(self.vel.x**2 + self.vel.y **2)
         self.pos += self.vel * dt
         self.vel += self.acc * dt
 
