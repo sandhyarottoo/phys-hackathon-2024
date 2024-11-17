@@ -31,22 +31,22 @@ class Canon(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.angle = 90
-        self.image = pygame.transform.rotozoom(canon_png, self.angle, 0.5)
-        self.rect = self.image.get_rect().center
-        self.pos = pygame.Vector2(SCREEN_WIDTH // 2 - self.image.get_rect().w//2, 0)
-        self.max_angle = 180
-        self.min_angle = 0
-        
+        self.original_image = pygame.transform.rotozoom(canon_png, self.angle, 0.3)
+        self.image = self.original_image
+        self.rect = self.image.get_rect(center=(SCREEN_WIDTH // 2, 0))  # Position in the center top
+        self.max_angle = 65
+        self.min_angle = -65
 
     def update(self, player, screen):
-        # if keys[pygame.K_LEFT]:
-        #     player.angle += 0.1
-        # if keys[pygame.K_RIGHT]:
-        #     player.angle -= 0.1
-        # initial_rect = self.rect
-        rotated_canon = pygame.transform.rotate(self.image, player.angle)
-        # rotated_canon.get_rect().center = initial_rect
-        self.image = rotated_canon
-        screen.blit(self.image, self.pos)
+        # Rotate the cannon based on the player's angle
+        self.angle = player.angle  # Update the angle from the player input
+
+        # Rotate the image and update the rect to maintain the center position
+        self.image = pygame.transform.rotate(self.original_image, -self.angle)  # Negative to rotate clockwise
+        self.rect = self.image.get_rect(center=self.rect.center)  # Keep the center consistent
+
+        # Blit the updated image to the screen
+        screen.blit(self.image, self.rect.topleft)
+
 
 
