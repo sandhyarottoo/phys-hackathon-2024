@@ -68,15 +68,18 @@ class Particle(pygame.sprite.Sprite):
             # print("angle: ", self.angle)
             
             # shoot the player
+            # print(Player.lives)
             if Player.start:
+                # if Player.lives < 3:
+                    # print("Starting")
                 self.acc = pygame.Vector2(0,0)
                 if  keys[pygame.K_SPACE]:
-                    print(self.angle)
+                    # print(self.angle)
                     if self.angle >= 0:
                         self.vel = pygame.Vector2(-1*self.initial_speed * np.sin(np.deg2rad(self.angle)), 
                                                 1*self.initial_speed * np.cos(np.deg2rad(self.angle)))
                     else:
-                        print('rhugwfds')
+                        # print('rhugwfds')
                         self.vel = pygame.Vector2(1*self.initial_speed * abs(np.sin(np.deg2rad(self.angle))), 
                                                 1*self.initial_speed * np.cos(np.deg2rad(self.angle)))
                     Player.start = False
@@ -86,7 +89,7 @@ class Particle(pygame.sprite.Sprite):
                 if pygame.sprite.collide_mask(self, particle) and not Player.start:
                     # reflect off of neutrons
                     if particle.type == 'neutron' or particle.type == 'Higgs':
-                        print('wooo collision')
+                        # print('wooo collision')
                         # self.applycollision(particle)
                         self.vel.x *= -1.01
                         self.vel.y *= -1.01
@@ -104,6 +107,7 @@ class Particle(pygame.sprite.Sprite):
                     Player.lives += 1
                     Player.respawn = True
                     Player.start = True
+                    self.vel = pygame.Vector2(0,0)
 
                 # respawn if needed
                 if Player.respawn:
@@ -125,7 +129,7 @@ class Particle(pygame.sprite.Sprite):
         #update neutrino, they don't interact so we just need to check for absorption
         if self.type == 'neutrino':
             if pygame.sprite.collide_mask(self,particle) and particle.is_player and not Player.start:
-                print('Player collided with neutrino')
+                # print('Player collided with neutrino')
                 self.isAbsorbed = True
                 self.vel.x = 0
                 self.vel.y = 0
