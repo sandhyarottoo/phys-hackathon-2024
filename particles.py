@@ -9,51 +9,71 @@ import torch
 class Particle(pygame.sprite.Sprite):
     neutrinos = 0
     neutrons = 0
-    def __init__(self,type,pos,vel = None):
+class Particle(pygame.sprite.Sprite):
+    neutrinos = 0
+    neutrons = 0
+    
+    def __init__(self, type, pos, vel=None):
         pygame.sprite.Sprite.__init__(self)
+        
         self.type = type
         self.pos = pos
         self.is_player = False
-        if vel == None:
-            self.vel = pygame.Vector2(np.random.rand()*10,np.random.rand()*10)
+        
+        # Load images for each particle type
+        neutrino_image = pygame.image.load("Images/Neutrino.png")
+        electron_image = pygame.image.load("Images/New_Electron.png")
+        proton_image = pygame.image.load("Images/Proton.png")
+        neutron_image = pygame.image.load("Images/Neutron.png")
+
+        # Scale images based on new width and height
+        neutrino_image = pygame.transform.scale(neutrino_image, (10, 10))
+        electron_image = pygame.transform.scale(electron_image, (10, 10))
+        proton_image = pygame.transform.scale(proton_image, (15, 15))
+        neutron_image = pygame.transform.scale(neutron_image, (15, 15))
+        
+        # Set default velocity if not provided
+        if vel is None:
+            self.vel = pygame.Vector2(np.random.rand() * 10, np.random.rand() * 10)
         else:
             self.vel = vel
 
+        self.acc = pygame.Vector2(0, 0)
+        self.radius = 12  # Default radius, but will be replaced by image size
         
-        self.acc = pygame.Vector2(0,0)
-                #these are whatever
-        self.radius = 12
-        
-        #should this be a sub class?
+        # Set image and position based on particle type
         if self.type == 'neutron':
             self.betadecay = False
             Particle.neutrons += 1
             self.color = (150, 150, 150)
             self.is_player = False
-        if self.type == 'neutrino':
+            self.image = neutron_image  # Assign image for neutron
+        elif self.type == 'neutrino':
             self.isAbsorbed = False
             Particle.neutrinos += 1
             self.color = (200, 50, 50)
             self.is_player = False
-        if self.type == 'electron':
+            self.image = neutrino_image  # Assign image for neutrino
+        elif self.type == 'electron':
             self.electroncapture = False
             self.color = (100, 100, 200)
             self.is_player = False
-        if self.type == 'proton':
-                    # these are specific to Player
-            self.radius = 10
+            self.image = electron_image  # Assign image for electron
+        elif self.type == 'proton':
+            self.radius = 10  # Specific size for proton
             self.color = (10, 10, 250)
-
-        #initialize the image and rect 
-        self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)
+            self.image = proton_image  # Assign image for proton
+        
+        # Set the rect attribute based on the image size and position
         self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        pygame.draw.circle(self.image, self.color, (self.radius, self.radius), self.radius)
+        self.rect.center = self.pos  # Set the center to the particle's position
+
+
         self.mask = pygame.mask.from_surface(self.image)
 
     # justing is silly boy
 
-    def update(self, screen, particle, keys, dt,electron):
+    def update(self, screen, particle, keys, dt, electron):
         if self.is_player:
             bucket = self.bucket
             canon = self.canon
@@ -65,14 +85,12 @@ class Particle(pygame.sprite.Sprite):
                 self.angle -= 0.5
                 canon.angle -= 0.5
 
-            # print("angle: ", self.angle)
-            
             # shoot the player
             if Player.start:
-                self.acc = pygame.Vector2(0,0)
-                if  keys[pygame.K_SPACE]:
-                    self.vel = pygame.Vector2(1*self.initial_speed * np.sin(np.deg2rad(self.angle)), 
-                                            1*self.initial_speed * np.cos(np.deg2rad(self.angle)))
+                self.acc = pygame.Vector2(0, 0)
+                if keys[pygame.K_SPACE]:
+                    self.vel = pygame.Vector2(1 * self.initial_speed * np.sin(np.deg2rad(self.angle)), 
+                                            1 * self.initial_speed * np.cos(np.deg2rad(self.angle)))
                     Player.start = False
 
             # detect collisions and apply responses
@@ -81,7 +99,6 @@ class Particle(pygame.sprite.Sprite):
                     # reflect off of neutrons
                     if particle.type == 'neutron' or particle.type == 'Higgs':
                         print('wooo collision')
-                        # self.applycollision(particle)
                         self.vel.x *= -1.01
                         self.vel.y *= -1.01
 
@@ -104,37 +121,28 @@ class Particle(pygame.sprite.Sprite):
                     self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 12)
                     Player.respawn = False
 
-                # self.pos += self.vel * dt
-                # self.vel += self.acc * dt
-                # self.acc = pygame.Vector2(0, 0)  # reset acceleration
                 if not Player.start:
                     self.acc += self.computeForce(particle)
-                # self.rect.center = self.pos
-                
-                pygame.draw.rect(screen, particle.color, particle.rect)
 
-        
-        #neutrons and neutrinos are groups of particles
+                self.rect.center = self.pos
+                # Draw the image and avoid overwriting it
+                screen.blit(self.image, self.rect)
 
-        #update neutrino, they don't interact so we just need to check for absorption
+        # Neutrinos and neutrons are groups of particles
         if self.type == 'neutrino':
-            if pygame.sprite.collide_mask(self,particle) and particle.is_player and not Player.start:
+            if pygame.sprite.collide_mask(self, particle) and particle.is_player and not Player.start:
                 print('Player collided with neutrino')
                 self.isAbsorbed = True
                 self.vel.x = 0
                 self.vel.y = 0
                 Particle.neutrinos -= 1
-                #self.kill()
 
-        #update neutron, if it collides its velocity changes
         if self.type == 'neutron':
-            if pygame.sprite.collide_mask(self,particle) and particle.type != 'neutrino':
-                # print('Neutron collided')
-                # self.applycollision(particle)
+            if pygame.sprite.collide_mask(self, particle) and particle.type != 'neutrino':
                 self.vel.x *= -1.01
                 self.vel.y *= -1.01
 
-            #compute strong force  
+            # compute strong force  
             self.acc += self.computeForce(particle)
 
         if self.type == 'electron':
@@ -146,25 +154,21 @@ class Particle(pygame.sprite.Sprite):
                 pos_diff = mouse_pos - electron_pos
                 t = torch.tensor([pos_diff.x, pos_diff.y, electron_vel.x, electron_vel.y, mouse_pos.x, mouse_pos.y, dt])
                 with torch.no_grad():
-                    a = 4*electron(t)
+                    a = 4 * electron(t)
                     self.acc = pygame.Vector2(a[0].item(), a[1].item())
-            if pygame.sprite.collide_mask(self,particle) and particle.type == 'proton':
+            if pygame.sprite.collide_mask(self, particle) and particle.type == 'proton':
                 self.electroncapture = True
 
-            # self.acc += self.computeForce(particle)
- 
-        speed = np.sqrt(self.vel.x**2 + self.vel.y **2)
+        speed = np.sqrt(self.vel.x ** 2 + self.vel.y ** 2)
         while speed > 10:
-            self.vel.x*= 0.5
+            self.vel.x *= 0.5
             self.vel.y *= 0.5
-            speed = np.sqrt(self.vel.x**2 + self.vel.y **2)
+            speed = np.sqrt(self.vel.x ** 2 + self.vel.y ** 2)
         self.pos += self.vel * dt
         self.vel += self.acc * dt
 
         self.rect.center = self.pos
-        pygame.draw.rect(screen, particle.color, particle.rect)
-        pygame.draw.circle(self.image, self.color, (self.radius, self.radius), self.radius)
-        
+        screen.blit(self.image, self.rect)  # Ensure the image is drawn
 
 
 
@@ -178,7 +182,7 @@ class Particle(pygame.sprite.Sprite):
         # if (self.type == 'electron' or self.type == 'proton') and (particle.type == 'electron' or particle.type == 'proton'):
         #     force += CoulombForce(r)*r.normalize()
         return force
-    
+        
     def applycollision(self,particle):
         step = 10
         if self.pos.x > particle.pos.x and self.vel.x < 0:
