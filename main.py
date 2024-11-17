@@ -172,7 +172,7 @@ def runGame():
             box.updateBox(screen, keys, dt)
     
         canon.update(player, screen)
-        bucket.update(player,screen)
+        bucket.update(player,screen,dt)
 
         #win condition
         if Particle.neutrinos == 0:

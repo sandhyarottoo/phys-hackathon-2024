@@ -11,3 +11,5 @@
 - Reflective boundary conditions
 
 -Since the nuclear force is short range, you only feel the effects of the particles within your grid
+
+
