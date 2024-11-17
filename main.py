@@ -71,7 +71,7 @@ def runIntro():
 
     
     # Create buttons with the correct positions and sizes, matching the image design
-    startButton = Button(SCREEN_WIDTH / 3 - 15, SCREEN_HEIGHT / 2 - 125, 305, 70, runGame)
+    startButton = Button(SCREEN_WIDTH / 3 - 15, SCREEN_HEIGHT / 2 - 125, 305, 70, runGame)    
     faqButton = Button(SCREEN_WIDTH / 3 - 15, SCREEN_HEIGHT / 2, 305, 70, runFAQ)
     exitButton = Button(SCREEN_WIDTH / 3 - 15, SCREEN_HEIGHT / 1.5 + 20, 305, 70, runEXIT)
     ifPiotr = Button(SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT * (1 / 3 + 5 / 10), 100, 20, runPiotr)
@@ -165,6 +165,7 @@ def runGame():
     
     # add player to box
     boxes[0].addParticle(player)
+    score = lives()
     
     # game loop
     running = True
@@ -173,12 +174,16 @@ def runGame():
         boxes[0].addParticle(player)
         
         keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            running = False
+            runIntro()
         
         for box in boxes:
             box.updateBox(screen, keys, dt)
     
         canon.update(player, screen)
         bucket.update(player,screen,dt)
+        score.update()
 
         #win condition
         if Particle.neutrinos == 0:

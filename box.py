@@ -1,7 +1,6 @@
 import numpy as n
 import pygame
-from particles import Particle
-from player import Player
+from particles import *
 from GLOBVAR import *
 from electron import Electron
 import torch
@@ -49,10 +48,6 @@ class Box():
     
     def isBottomBox(self):
         return self.index >= NBOX_X * (NBOX_Y - 1)
-    
-    def getTopCenterBox(self):
-        is_top = self.index < NBOX_X
-        is_center = self.index % NBOX_X == NBOX_X // 2
         
     def updateBox(self, screen, keys, dt):
         if not self.contains_particles():
@@ -65,6 +60,18 @@ class Box():
                 for other_particle in neighbor.particles:
                     if particle != other_particle:
                         particle.update(screen, other_particle, keys, dt,electron)
+                        
+                        if particle.is_player and Player.respawn:
+                            self.particles.remove(particle)
+                            if Player.lives > 0:
+                                boxes[0].addParticle(particle)
+                                Player.respawn = False
+                                Player.start = True
+                                if particle.betadecay:
+                                    self.betaDecay()
+                                    particle.betadecay = False
+                                
+                        
                         if (particle.type == 'electron' or particle.type == 'proton') and particle.electroncapture:
                             x, y, velx, vely = particle.pos.x, particle.pos.y, particle.vel.x, particle.vel.y
                             x1, y1, velx1, vely1 = other_particle.pos.x, other_particle.pos.y, other_particle.vel.x, other_particle.vel.y
@@ -80,7 +87,8 @@ class Box():
                                     for neighbor in neighbors:
                                         neighbor.removeParticle(particle)
                                 except:
-                                    print('Neutrino collided, but it is no longer in the box')
+                                    pass
+                                    # print('Neutrino collided, but it is no longer in the box')
 
                         
             self.checkParticles()
@@ -145,11 +153,16 @@ class Box():
         
         if particle.rect.bottom > SCREEN_HEIGHT:
             if self.isBottomBox() and particle.is_player:
+                print("Player hit bottom. updating lives from ", Player.lives, " to ", end='')
                 Player.lives -= 1
+                print(Player.lives)
                 Player.respawn = True
-                Player.start = True
-
-                self.particles.remove(particle)
+                particle.pos = pygame.Vector2(SCREEN_WIDTH // 2, 12)
+                particle.vel = pygame.Vector2(0, 0)
+                particle.angle = 0
+                particle.show = True
+                # boxes[0].addParticle(particle)
+                # self.particles.remove(particle)
             if not particle.is_player:
                 particle.vel.y = particle.vel.y * -1
                 particle.rect.bottom = SCREEN_HEIGHT - 1
