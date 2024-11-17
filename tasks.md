@@ -22,6 +22,9 @@ missing: piotrusc + justusc
 
 sleepy: franco
 
+# Pooping: Justin
+### He's struggling, let's cheer him on
+
 
 MUSIC & SFX:
 - Main Menu music (~20 seconds)
