@@ -4,6 +4,7 @@ from particles import *
 from GLOBVAR import *
 from electron import Electron
 import torch
+from pegglestuff import *
 
 electron = Electron()
 electron.load_state_dict(torch.load('model.pth', weights_only=True, map_location=torch.device('cpu')))
@@ -49,7 +50,7 @@ class Box():
     def isBottomBox(self):
         return self.index >= NBOX_X * (NBOX_Y - 1)
         
-    def updateBox(self, screen, keys, dt):
+    def updateBox(self, screen, keys, dt,bucket):
         if not self.contains_particles():
             return
         
@@ -60,18 +61,20 @@ class Box():
                 for other_particle in neighbor.particles:
                     if particle != other_particle:
                         particle.update(screen, other_particle, keys, dt,electron)
-                        
+                        if bucket.betadecay and particle.is_player:
+                            self.betaDecay()
+                            bucket.betadecay = False
+                            Player.respawn = True
+                            Player.start = True
                         if particle.is_player and Player.respawn:
                             self.particles.remove(particle)
                             if Player.lives > 0:
                                 boxes[0].addParticle(particle)
                                 Player.respawn = False
                                 Player.start = True
-                                if particle.betadecay:
-                                    self.betaDecay()
-                                    particle.betadecay = False
-                                
+
                         
+
                         if (particle.type == 'electron' or particle.type == 'proton') and particle.electroncapture:
                             x, y, velx, vely = particle.pos.x, particle.pos.y, particle.vel.x, particle.vel.y
                             x1, y1, velx1, vely1 = other_particle.pos.x, other_particle.pos.y, other_particle.vel.x, other_particle.vel.y

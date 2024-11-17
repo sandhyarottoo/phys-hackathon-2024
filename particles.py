@@ -78,11 +78,11 @@ class Particle(pygame.sprite.Sprite):
             canon = self.canon
             # control cannon angle
             if keys[pygame.K_LEFT] and canon.angle < canon.max_angle:
-                self.angle += 0.5
-                canon.angle += 0.5
+                self.angle += 0.1
+                canon.angle += 0.1
             if keys[pygame.K_RIGHT] and canon.angle > canon.min_angle:
-                self.angle -= 0.5
-                canon.angle -= 0.5
+                self.angle -= 0.1
+                canon.angle -= 0.1
 
             # shoot the player
             # print(Player.lives)
@@ -123,7 +123,7 @@ class Particle(pygame.sprite.Sprite):
                 if pygame.sprite.collide_mask(self, bucket):
                     Player.lives += 1
                     Player.respawn = True
-                    Player.start = True
+                    # Player.start = True
                     self.vel = pygame.Vector2(0,0)
                     
                     self.betadecay = True

@@ -10,12 +10,13 @@ class Bucket(pygame.sprite.Sprite):
         super().__init__()
         self.pos = pygame.Vector2(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 20)
         self.color = (0, 255, 0)
-        self.vel = pygame.Vector2(50, 0)
+        self.vel = pygame.Vector2(100, 0)
         
         # Define image and rect for the bucket
         self.image = pygame.Surface((100, 15), pygame.SRCALPHA)
         pygame.draw.rect(self.image, self.color, self.image.get_rect())
         self.rect = self.image.get_rect(center=self.pos)
+        self.betadecay = False
         
     def update(self, player, screen,dt):
         if pygame.sprite.collide_mask(self, player):

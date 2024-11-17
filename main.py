@@ -188,7 +188,7 @@ def runGame():
             runIntro()
         
         for box in boxes:
-            box.updateBox(screen, keys, dt)
+            box.updateBox(screen, keys, dt,bucket)
     
         canon.update(player, screen)
         bucket.update(player,screen,dt)
@@ -198,6 +198,9 @@ def runGame():
 
         #win condition
         if Particle.neutrinos == 0:
+            screen.fill((0,0,0))
+
+        if Player.lives <= 0:
             screen.fill((0,0,0))
                 
         for event in pygame.event.get():
