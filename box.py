@@ -40,6 +40,10 @@ class Box():
     
     def isBottomBox(self):
         return self.index >= NBOX_X * (NBOX_Y - 1)
+    
+    def getTopCenterBox(self):
+        is_top = self.index < NBOX_X
+        is_center = self.index % NBOX_X == NBOX_X // 2
         
     def updateBox(self, screen, keys, dt):
         neighbors = self.getAdjBoxes()
@@ -49,7 +53,6 @@ class Box():
                 for other_particle in neighbor.particles:
                     if particle != other_particle:
                         particle.update(screen, other_particle, keys, dt)
-                        pygame.draw.rect(screen, particle.color, particle.rect)
                         if (particle.type == 'electron' or particle.type == 'proton') and particle.electroncapture:
                             x, y, velx, vely = particle.pos.x, particle.pos.y, particle.vel.x, particle.vel.y
                             x1, y1, velx1, vely1 = other_particle.pos.x, other_particle.pos.y, other_particle.vel.x, other_particle.vel.y
