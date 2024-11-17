@@ -44,8 +44,6 @@ class Particle(pygame.sprite.Sprite):
             self.radius = 10
             self.color = (10, 10, 250)
 
-
-
         #initialize the image and rect 
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)
         self.rect = self.image.get_rect()
@@ -55,7 +53,7 @@ class Particle(pygame.sprite.Sprite):
 
     # justing is silly boy
 
-    def update(self, screen, particle, keys, dt):
+    def update(self, screen, particle, keys, dt,electron):
         if self.is_player:
             bucket = self.bucket
             canon = self.canon
@@ -140,8 +138,6 @@ class Particle(pygame.sprite.Sprite):
             self.acc += self.computeForce(particle)
 
         if self.type == 'electron':
-            electron = Electron()
-            electron.load_state_dict(torch.load('model.pth', weights_only=True, map_location=torch.device('cpu')))
             if particle.is_player:
                 mouse_pos = particle.rect.center
                 mouse_vel = particle.vel

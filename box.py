@@ -3,6 +3,12 @@ import pygame
 from particles import Particle
 from player import Player
 from GLOBVAR import *
+from electron import Electron
+import torch
+
+electron = Electron()
+electron.load_state_dict(torch.load('model.pth', weights_only=True, map_location=torch.device('cpu')))
+
 
 class Box():
     def __init__(self, x, y, w, h, index):
@@ -52,7 +58,7 @@ class Box():
             for neighbor in neighbors:
                 for other_particle in neighbor.particles:
                     if particle != other_particle:
-                        particle.update(screen, other_particle, keys, dt)
+                        particle.update(screen, other_particle, keys, dt,electron)
                         if (particle.type == 'electron' or particle.type == 'proton') and particle.electroncapture:
                             x, y, velx, vely = particle.pos.x, particle.pos.y, particle.vel.x, particle.vel.y
                             x1, y1, velx1, vely1 = other_particle.pos.x, other_particle.pos.y, other_particle.vel.x, other_particle.vel.y
