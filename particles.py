@@ -87,10 +87,16 @@ class Particle(pygame.sprite.Sprite):
 
             # shoot the player
             if Player.start:
-                self.acc = pygame.Vector2(0, 0)
-                if keys[pygame.K_SPACE]:
-                    self.vel = pygame.Vector2(1 * self.initial_speed * np.sin(np.deg2rad(self.angle)), 
-                                            1 * self.initial_speed * np.cos(np.deg2rad(self.angle)))
+                self.acc = pygame.Vector2(0,0)
+                if  keys[pygame.K_SPACE]:
+                    print(self.angle)
+                    if self.angle >= 0:
+                        self.vel = pygame.Vector2(-1*self.initial_speed * np.sin(np.deg2rad(self.angle)), 
+                                                1*self.initial_speed * np.cos(np.deg2rad(self.angle)))
+                    else:
+                        print('rhugwfds')
+                        self.vel = pygame.Vector2(1*self.initial_speed * abs(np.sin(np.deg2rad(self.angle))), 
+                                                1*self.initial_speed * np.cos(np.deg2rad(self.angle)))
                     Player.start = False
 
             # detect collisions and apply responses
@@ -121,14 +127,19 @@ class Particle(pygame.sprite.Sprite):
                     self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 12)
                     Player.respawn = False
 
-                if not Player.start:
-                    self.acc += self.computeForce(particle)
+                # self.pos += self.vel * dt
+                # self.vel += self.acc * dt
+                # self.acc = pygame.Vector2(0, 0)  # reset acceleration
+                # if not Player.start:
+                #     self.acc += self.computeForce(particle)
+                # self.rect.center = self.pos
+                
+                pygame.draw.rect(screen, particle.color, particle.rect)
 
-                self.rect.center = self.pos
-                # Draw the image and avoid overwriting it
-                screen.blit(self.image, self.rect)
+        
+        #neutrons and neutrinos are groups of particles
 
-        # Neutrinos and neutrons are groups of particles
+        #update neutrino, they don't interact so we just need to check for absorption
         if self.type == 'neutrino':
             if pygame.sprite.collide_mask(self, particle) and particle.is_player and not Player.start:
                 print('Player collided with neutrino')
@@ -216,7 +227,7 @@ class Player(Particle):
         self.acc = pygame.Vector2(0, 0)
         self.vel = pygame.Vector2(0,0)
         self.init_pos = pygame.Vector2(SCREEN_WIDTH // 2, 20)
-        self.show = False
+        self.show = True
    
         self.bucket = bucket
         self.canon = canon

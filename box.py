@@ -17,6 +17,9 @@ class Box():
         self.particles = []
         
     def initializeParticles(self, n_particles, distribtution='random'):
+        if n_particles <= 0:
+            return
+        
         xs = []
         ys =[]
         for i in range(n_particles):
@@ -52,6 +55,9 @@ class Box():
         is_center = self.index % NBOX_X == NBOX_X // 2
         
     def updateBox(self, screen, keys, dt):
+        if not self.contains_particles():
+            return
+        
         neighbors = self.getAdjBoxes()
         for particle in self.particles:
             self.wallCollide(particle)
@@ -152,6 +158,9 @@ class Box():
         return False
     
     def checkParticles(self):
+        if not self.contains_particles():
+            return
+        
         gone_particles = []
         
         for particle in self.particles:
@@ -215,7 +224,7 @@ class Box():
 # getting all boxes
 boxes = []
 for j in range(NBOX_Y):
-    n_particles = 2
+    n_particles = 1
     for i in range(NBOX_X):
         box = Box(i*BOX_WIDTH, j*BOX_HEIGHT, BOX_WIDTH, BOX_HEIGHT, i+j*NBOX_X)
         box.initializeParticles(n_particles)
