@@ -53,7 +53,7 @@ class Particle(pygame.sprite.Sprite):
 
     # justing is silly boy
 
-    def update(self, screen, particle, keys, dt,electron):
+    def update(self, screen, particle, keys, dt, electron):
         if self.is_player:
             bucket = self.bucket
             canon = self.canon
@@ -71,8 +71,12 @@ class Particle(pygame.sprite.Sprite):
             if Player.start:
                 self.acc = pygame.Vector2(0,0)
                 if  keys[pygame.K_SPACE]:
-                    self.vel = pygame.Vector2(1*self.initial_speed * np.sin(np.deg2rad(self.angle)), 
-                                            1*self.initial_speed * np.cos(np.deg2rad(self.angle)))
+                    if self.angle >= 0:
+                        self.vel = pygame.Vector2(1*self.initial_speed * np.sin(np.deg2rad(self.angle - 90)), 
+                                                1*self.initial_speed * np.cos(np.deg2rad(self.angle + 90)))
+                    else:
+                        self.vel = pygame.Vector2(1*self.initial_speed * np.sin(np.deg2rad(self.angle + 90)), 
+                                                1*self.initial_speed * np.cos(np.deg2rad(self.angle + 90)))
                     Player.start = False
 
             # detect collisions and apply responses
@@ -107,8 +111,8 @@ class Particle(pygame.sprite.Sprite):
                 # self.pos += self.vel * dt
                 # self.vel += self.acc * dt
                 # self.acc = pygame.Vector2(0, 0)  # reset acceleration
-                if not Player.start:
-                    self.acc += self.computeForce(particle)
+                # if not Player.start:
+                #     self.acc += self.computeForce(particle)
                 # self.rect.center = self.pos
                 
                 pygame.draw.rect(screen, particle.color, particle.rect)
