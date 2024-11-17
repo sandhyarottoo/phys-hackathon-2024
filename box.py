@@ -37,6 +37,9 @@ class Box():
         
     def isEdgeBox(self):
         return self.index % NBOX_X == 0 or self.index % NBOX_X == NBOX_X - 1 or self.index < NBOX_X or self.index >= NBOX_X * (NBOX_Y - 1)
+    
+    def isBottomBox(self):
+        return self.index >= NBOX_X * (NBOX_Y - 1)
         
     def updateBox(self, screen, keys, dt):
         neighbors = self.getAdjBoxes()
@@ -115,6 +118,11 @@ class Box():
             return True
         
         if particle.rect.bottom > SCREEN_HEIGHT:
+            if self.isBottomBox() and particle.is_player:
+                particle.lives -= 1
+                particle.respawn = True
+                self.removeParticle(particle)
+            
             particle.vel.y = particle.vel.y * -1
             particle.rect.bottom = SCREEN_HEIGHT - 1
             return True
