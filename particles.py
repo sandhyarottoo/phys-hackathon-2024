@@ -69,8 +69,8 @@ class Particle(pygame.sprite.Sprite):
             if Player.start:
                 self.acc = pygame.Vector2(0,0)
                 if  keys[pygame.K_SPACE]:
-                    self.vel = pygame.Vector2(1*self.initial_speed * np.cos(np.deg2rad(self.angle)), 
-                                            1*self.initial_speed * np.sin(np.deg2rad(self.angle)))
+                    self.vel = pygame.Vector2(1*self.initial_speed * np.sin(np.deg2rad(self.angle)), 
+                                            1*self.initial_speed * np.cos(np.deg2rad(self.angle)))
                     Player.start = False
 
             # detect collisions and apply responses
@@ -78,7 +78,7 @@ class Particle(pygame.sprite.Sprite):
                 # reflect off of neutrons
                 if particle.type == 'neutron' or particle.type == 'Higgs':
                     print('wooo collision')
-                    self.applycollision(particle)
+                    # self.applycollision(particle)
                     self.vel.x *= -1.01
                     self.vel.y *= -1.01
 
@@ -124,7 +124,7 @@ class Particle(pygame.sprite.Sprite):
         if self.type == 'neutron':
             if pygame.sprite.collide_mask(self,particle) and particle.type != 'neutrino':
                 # print('Neutron collided')
-                self.applycollision(particle)
+                # self.applycollision(particle)
                 self.vel.x *= -1.01
                 self.vel.y *= -1.01
 

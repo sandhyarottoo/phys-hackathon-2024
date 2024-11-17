@@ -164,6 +164,7 @@ def runGame():
     running = True
     while running:
         screen.fill((0, 0, 0))
+        boxes[0].addParticle(player)
         
         keys = pygame.key.get_pressed()
         

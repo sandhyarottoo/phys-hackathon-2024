@@ -58,7 +58,16 @@ class Box():
                             self.addParticle(Particle('neutron', pygame.Vector2(x, y), pygame.Vector2(velx, vely)))
                             self.addParticle(Particle('neutrino', pygame.Vector2(x1, y1), pygame.Vector2(velx1, vely1)))
                         if particle.type == 'neutrino' and particle.isAbsorbed:
-                            self.removeParticle(particle)
+                            try:
+                                self.removeParticle(particle)
+                            except:
+                                try: 
+                                    for neighbor in neighbors:
+                                        neighbor.removeParticle(particle)
+                                except:
+                                    print('Neutrino collided, but it is no longer in the box')
+
+                        
             self.checkParticles()
         
     def getAdjBoxes(self):
@@ -124,10 +133,11 @@ class Box():
                 Player.lives -= 1
                 Player.respawn = True
                 Player.start = True
-                self.removeParticle(particle)
-            
-            particle.vel.y = particle.vel.y * -1
-            particle.rect.bottom = SCREEN_HEIGHT - 1
+
+                self.particles.remove(particle)
+            if not particle.is_player:
+                particle.vel.y = particle.vel.y * -1
+                particle.rect.bottom = SCREEN_HEIGHT - 1
             return True
         
         return False
