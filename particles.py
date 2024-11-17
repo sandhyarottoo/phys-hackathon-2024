@@ -44,8 +44,6 @@ class Particle(pygame.sprite.Sprite):
             self.radius = 10
             self.color = (10, 10, 250)
 
-
-
         #initialize the image and rect 
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius), pygame.SRCALPHA)
         self.rect = self.image.get_rect()
@@ -55,7 +53,7 @@ class Particle(pygame.sprite.Sprite):
 
     # justing is silly boy
 
-    def update(self, screen, particle, keys, dt):
+    def update(self, screen, particle, keys, dt,electron):
         if self.is_player:
             bucket = self.bucket
             canon = self.canon
@@ -78,39 +76,43 @@ class Particle(pygame.sprite.Sprite):
                     Player.start = False
 
             # detect collisions and apply responses
-            if pygame.sprite.collide_mask(self, particle) and not Player.start:
-                # reflect off of neutrons
-                if particle.type == 'neutron' or particle.type == 'Higgs':
-                    print('wooo collision')
-                    # self.applycollision(particle)
-                    self.vel.x *= -1.01
-                    self.vel.y *= -1.01
+            if self.show:
+                if pygame.sprite.collide_mask(self, particle) and not Player.start:
+                    # reflect off of neutrons
+                    if particle.type == 'neutron' or particle.type == 'Higgs':
+                        print('wooo collision')
+                        # self.applycollision(particle)
+                        self.vel.x *= -1.01
+                        self.vel.y *= -1.01
 
-                # get "killed" by electrons
-                if particle.type == 'electron':
-                    Player.lives -= 1
-                    if Player.lives != 0:
-                        Player.respawn = True
-                        Player.start = True
-                    self.electroncapture = True
+                    # get "killed" by electrons
+                    if particle.type == 'electron':
+                        Player.lives -= 1
+                        if Player.lives != 0:
+                            Player.respawn = True
+                            Player.start = True
+                        self.electroncapture = True
 
-            # gain a life if colliding with the bucket
-            if pygame.sprite.collide_mask(self, bucket):
-                Player.lives += 1
-                Player.respawn = True
-                Player.start = True
+                # gain a life if colliding with the bucket
+                if pygame.sprite.collide_mask(self, bucket):
+                    Player.lives += 1
+                    Player.respawn = True
+                    Player.start = True
 
-            # respawn if needed
-            if Player.respawn:
-                self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 20)
-                Player.respawn = False
+                # respawn if needed
+                if Player.respawn:
+                    self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 12)
+                    Player.respawn = False
 
-            # self.pos += self.vel * dt
-            # self.vel += self.acc * dt
-            # self.acc = pygame.Vector2(0, 0)  # reset acceleration
-            if not Player.start:
-                self.acc += self.computeForce(particle)
-            # self.rect.center = self.pos
+                # self.pos += self.vel * dt
+                # self.vel += self.acc * dt
+                # self.acc = pygame.Vector2(0, 0)  # reset acceleration
+                if not Player.start:
+                    self.acc += self.computeForce(particle)
+                # self.rect.center = self.pos
+                
+                pygame.draw.rect(screen, particle.color, particle.rect)
+
         
         #neutrons and neutrinos are groups of particles
 
@@ -136,8 +138,6 @@ class Particle(pygame.sprite.Sprite):
             self.acc += self.computeForce(particle)
 
         if self.type == 'electron':
-            electron = Electron()
-            electron.load_state_dict(torch.load('model.pth', weights_only=True, map_location=torch.device('cpu')))
             if particle.is_player:
                 mouse_pos = particle.rect.center
                 mouse_vel = particle.vel
@@ -162,7 +162,9 @@ class Particle(pygame.sprite.Sprite):
         self.vel += self.acc * dt
 
         self.rect.center = self.pos
+        pygame.draw.rect(screen, particle.color, particle.rect)
         pygame.draw.circle(self.image, self.color, (self.radius, self.radius), self.radius)
+        
 
 
 
@@ -209,6 +211,8 @@ class Player(Particle):
         self.initial_speed = 10
         self.acc = pygame.Vector2(0, 0)
         self.vel = pygame.Vector2(0,0)
+        self.init_pos = pygame.Vector2(SCREEN_WIDTH // 2, 20)
+        self.show = False
    
         self.bucket = bucket
         self.canon = canon

@@ -6,30 +6,31 @@ from GLOBVAR import *
 
 
 class Bucket(pygame.sprite.Sprite):
-
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.pos = pygame.Vector2(SCREEN_HEIGHT+20,SCREEN_WIDTH//2)
-        self.betadecay = False
-        self.color = (10,250,250)
-        self.vel = pygame.Vector2(10,0)
-        self.image = pygame.Surface((10,4))
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        pygame.draw.rect(self.image,self.color,self.rect)
-
-    def update(self,player):
-
-        if pygame.sprite.collide_mask(self,player):
+        super().__init__()
+        self.pos = pygame.Vector2(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 20)
+        self.color = (0, 255, 0)
+        self.vel = pygame.Vector2(50, 0)
+        
+        # Define image and rect for the bucket
+        self.image = pygame.Surface((100, 15), pygame.SRCALPHA)
+        pygame.draw.rect(self.image, self.color, self.image.get_rect())
+        self.rect = self.image.get_rect(center=self.pos)
+        
+    def update(self, player,screen,dt):
+        if pygame.sprite.collide_mask(self, player):
             self.betadecay = True
 
+        # Change direction on screen edges
         if self.pos.x >= SCREEN_WIDTH or self.pos.x <= 0:
             self.vel *= -1
-        self.pos += self.vel*dt
-        self.rect.center = self.pos
-        pygame.draw.rect(self.image,self.color,self.rect)
-        
 
+        # Update position and rect center
+        self.pos.x += self.vel.x * dt
+        self.rect.center = self.pos
+
+        #pygame.draw.rect(self.image, self.color, self.image.get_rect())
+        screen.blit(self.image, self.rect)
 
 class Canon(pygame.sprite.Sprite):
 
