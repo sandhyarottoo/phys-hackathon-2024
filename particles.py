@@ -11,6 +11,7 @@ class Particle(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.type = type
         self.pos = pos
+        self.is_player = False
         if vel == None:
             self.vel = pygame.Vector2(np.random.rand()*10,np.random.rand()*10)
         else:
@@ -40,7 +41,55 @@ class Particle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
 
-    def update(self,particle,dt):
+    def update(self, screen, particle, keys, dt):
+        if self.is_player:
+            bucket = self.bucket
+            canon = self.canon
+            # control cannon angle
+            if keys[pygame.K_LEFT]:
+                self.angle += 1
+                canon.angle += 1
+            if keys[pygame.K_RIGHT]:
+                self.angle -= 1
+                canon.angle -= 1
+
+            print("angle: ", self.angle)
+            canon.update(self, screen, keys)
+            
+            # shoot the player
+            if keys[pygame.K_SPACE]:
+                self.vel = pygame.Vector2(self.initial_speed * np.cos(self.angle), 
+                                        self.initial_speed * np.sin(self.angle))
+
+            # detect collisions and apply responses
+            if pygame.sprite.collide_mask(self, particle):
+                # reflect off of neutrons
+                if particle.type == 'neutron' or particle.type == 'Higgs':
+                    self.vel.x *= -0.8
+                    self.vel.y *= -0.8
+
+                # get "killed" by electrons
+                if particle.type == 'electron':
+                    Player.lives -= 1
+                    if Player.lives != 0:
+                        self.respawn = True
+                    self.electroncapture = True
+
+            # gain a life if colliding with the bucket
+            if pygame.sprite.collide_mask(self, bucket):
+                Player.lives += 1
+                self.respawn = True
+
+            # respawn if needed
+            if self.respawn:
+                self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 0)
+
+            self.pos += self.vel * dt
+            self.vel += self.acc * dt
+            self.acc = pygame.Vector2(0, 0)  # reset acceleration
+            self.acc += self.computeForce(particle)
+            self.rect.center = self.pos
+        
         #neutrons and neutrinos are groups of particles
 
         #update neutrino, they don't interact so we just need to check for absorption
@@ -88,8 +137,9 @@ class Particle(pygame.sprite.Sprite):
 class Player(Particle):
     lives = 3
     
-    def __init__(self,keys,bucket,canon):
+    def __init__(self,bucket,canon):
         super().__init__(type='proton', pos=pygame.Vector2(SCREEN_WIDTH // 2, 0))
+        self.is_player = True
         self.angle = 0
         self.initial_speed = 10
         self.acc = pygame.Vector2(0, 0)
@@ -104,55 +154,53 @@ class Player(Particle):
         self.rect.center = self.pos
         self.respawn = False
         self.electroncapture = False
-        self.keys = keys
         self.bucket = bucket
         self.canon = canon
 
-    def update(self, particle,dt):
-        keys = self.keys
-        bucket = self.bucket
-        canon = self.canon
-        # control cannon angle
-        if keys[pygame.K_LEFT]:
-            self.angle += 1
-            canon.angle += 1
-        if keys[pygame.K_RIGHT]:
-            self.angle -= 1
-            canon.angle -= 1
+    # def update(self, particle, keys, dt):
+    #     bucket = self.bucket
+    #     canon = self.canon
+    #     # control cannon angle
+    #     if keys[pygame.K_LEFT]:
+    #         self.angle += 1
+    #         canon.angle += 1
+    #     if keys[pygame.K_RIGHT]:
+    #         self.angle -= 1
+    #         canon.angle -= 1
 
-        # shoot the player
-        if keys[pygame.K_SPACE]:
-            self.vel = pygame.Vector2(self.initial_speed * np.cos(self.angle), 
-                                      self.initial_speed * np.sin(self.angle))
+    #     # shoot the player
+    #     if keys[pygame.K_SPACE]:
+    #         self.vel = pygame.Vector2(self.initial_speed * np.cos(self.angle), 
+    #                                   self.initial_speed * np.sin(self.angle))
 
-        # detect collisions and apply responses
-        if pygame.sprite.collide_mask(self, particle):
-            # reflect off of neutrons
-            if particle.type == 'neutron' or particle.type == 'Higgs':
-                self.vel.x *= -0.8
-                self.vel.y *= -0.8
+    #     # detect collisions and apply responses
+    #     if pygame.sprite.collide_mask(self, particle):
+    #         # reflect off of neutrons
+    #         if particle.type == 'neutron' or particle.type == 'Higgs':
+    #             self.vel.x *= -0.8
+    #             self.vel.y *= -0.8
 
-            # get "killed" by electrons
-            if particle.type == 'electron':
-                Player.lives -= 1
-                if Player.lives != 0:
-                    self.respawn = True
-                self.electroncapture = True
+    #         # get "killed" by electrons
+    #         if particle.type == 'electron':
+    #             Player.lives -= 1
+    #             if Player.lives != 0:
+    #                 self.respawn = True
+    #             self.electroncapture = True
 
-        # gain a life if colliding with the bucket
-        if pygame.sprite.collide_mask(self, bucket):
-            Player.lives += 1
-            self.respawn = True
+    #     # gain a life if colliding with the bucket
+    #     if pygame.sprite.collide_mask(self, bucket):
+    #         Player.lives += 1
+    #         self.respawn = True
 
-        # respawn if needed
-        if self.respawn:
-            self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 0)
+    #     # respawn if needed
+    #     if self.respawn:
+    #         self.pos = pygame.Vector2(SCREEN_WIDTH // 2, 0)
 
-        self.pos += self.vel * dt
-        self.vel += self.acc * dt
-        self.acc = pygame.Vector2(0, 0)  # reset acceleration
-        self.acc += self.computeForce(particle)
-        self.rect.center = self.pos
+    #     self.pos += self.vel * dt
+    #     self.vel += self.acc * dt
+    #     self.acc = pygame.Vector2(0, 0)  # reset acceleration
+    #     self.acc += self.computeForce(particle)
+    #     self.rect.center = self.pos
 
 
 

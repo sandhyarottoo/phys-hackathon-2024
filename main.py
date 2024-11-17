@@ -1,4 +1,3 @@
-
 from particles import *
 from pegglestuff import *
 from box import Box, boxes
@@ -12,7 +11,7 @@ canon = Canon()
 
 ### BUTTON CLASS ###
 class Button():
-    def __init__(self, x, y, width, height, function, text, font, inMenu=True ):
+    def __init__(self, x, y, width, height, function, text, font, inMenu=True):
         self.x = x
         self.y = y
         self.width = width
@@ -80,13 +79,17 @@ clock = pygame.time.Clock()
 font = pygame.font.SysFont('arial', 40)
 
 keys = pygame.key.get_pressed()
-player = Player(keys,bucket,canon)
+player = Player(bucket,canon)
+
+piotrfont = pygame.font.SysFont('arial', 12)
 
 # game methods
 def runIntro():
     startButton = Button(SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT*(1/3+2/10), 200, 50, runGame, "Start", font)
     faqButton = Button(SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT*(1/3 + 3/10), 200, 50, runFAQ, "FAQ", font)
     exitButton = Button(SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT*(1/3 + 4/10), 200, 50, runEXIT, "Exit", font)
+    
+    ifPiotr = Button(SCREEN_WIDTH/2 - 50, SCREEN_HEIGHT*(1/3 + 5/10), 100, 20, runPiotr, "Press if Piotr", piotrfont, inMenu=False)
     
     intro = True
     while intro:
@@ -98,7 +101,21 @@ def runIntro():
         startButton.process()
         faqButton.process()
         exitButton.process()
+        ifPiotr.process()
         
+        pygame.display.flip()
+        clock.tick(60)
+        
+def runPiotr():
+    menuButton = Button(20, 10, 140, 50, runIntro, "Menu", font)
+    piotr = True
+    while piotr:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                runEXIT()
+        screen.fill((0, 0, 0))
+        screen.blit(font.render("Get outa here you silly boy you", True, (255, 255, 255)), (SCREEN_WIDTH/2 - 300, SCREEN_HEIGHT/2))
+        menuButton.process()
         pygame.display.flip()
         clock.tick(60)
     
@@ -140,14 +157,20 @@ def runGame():
     global keys
     global screen
     
+    # add player to box
+    boxes[0].addParticle(player)
+    
     # game loop
     running = True
     while running:
         screen.fill((0, 0, 0))
         
+        keys = pygame.key.get_pressed()
+        
         for box in boxes:
-            # box.draw(screen, signal_content=True)
-            box.updateBox(screen, dt)
+            box.updateBox(screen, keys, dt)
+    
+        canon.update(player, screen, keys) 
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

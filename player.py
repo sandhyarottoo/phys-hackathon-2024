@@ -9,6 +9,7 @@ from globals import *
 class Player(pygame.sprite.Sprite):
     lives = 3
     def __init__(self,angle):
+        pygame.sprite.Sprite.__init__(self)
         self.angle = angle
         self.initial_speed = 10
         #start the particle at the top
@@ -30,7 +31,7 @@ class Player(pygame.sprite.Sprite):
     #     if keys[pygame.K_SPACE]:
 
 
-    def update(self,keys,particle,dt,bucket,walls,canon):
+    def update(self,keys,particle,dt,bucket,canon):
 
         #this is for the start of the game, move the canon around to choose angle of initial velocity
         if keys[pygame.K_LEFT]:
@@ -59,11 +60,11 @@ class Player(pygame.sprite.Sprite):
                 self.electroncapture = True
 
 
-        #reflect off the walls
-        for wall in walls:
-            if pygame.sprite.collide_mask(self,wall):
-                self.vel.x *= -0.8
-                self.vel.y *= -0.8
+        # #reflect off the walls
+        # for wall in walls:
+        #     if pygame.sprite.collide_mask(self,wall):
+        #         self.vel.x *= -0.9
+        #         self.vel.y *= -0.9
 
         #get a free ball if you collide with the bucket
         if pygame.sprite.collide_mask(self,bucket):

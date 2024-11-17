@@ -27,8 +27,8 @@ class Box():
                 xs.append(x)
                 ys.append(y)
                 
-                velx = 3*n.random.randn(1)
-                vely = 3*n.random.randn(1)
+                velx = 1*n.random.randn(1)
+                vely = 1*n.random.randn(1)
                 
             else:
                 x, y = None # distribution() to be implemented
@@ -38,14 +38,14 @@ class Box():
     def isEdgeBox(self):
         return self.index % NBOX_X == 0 or self.index % NBOX_X == NBOX_X - 1 or self.index < NBOX_X or self.index >= NBOX_X * (NBOX_Y - 1)
         
-    def updateBox(self, screen, dt):
+    def updateBox(self, screen, keys, dt):
         neighbors = self.getAdjBoxes()
         for particle in self.particles:
             self.wallCollide(particle)
             for neighbor in neighbors:
                 for other_particle in neighbor.particles:
                     if particle != other_particle:
-                        particle.update(other_particle, dt)
+                        particle.update(screen, other_particle, keys, dt)
                         pygame.draw.rect(screen, particle.color, particle.rect)
                         if (particle.type == 'electron' or particle.type == 'proton') and particle.electroncapture:
                             x, y, velx, vely = particle.pos.x, particle.pos.y, particle.vel.x, particle.vel.y
@@ -185,7 +185,7 @@ class Box():
 # getting all boxes
 boxes = []
 for j in range(NBOX_Y):
-    n_particles = 5
+    n_particles = 2
     for i in range(NBOX_X):
         box = Box(i*BOX_WIDTH, j*BOX_HEIGHT, BOX_WIDTH, BOX_HEIGHT, i+j*NBOX_X)
         box.initializeParticles(n_particles)
