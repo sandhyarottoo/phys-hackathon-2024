@@ -170,8 +170,8 @@ def runGame():
         for box in boxes:
             box.updateBox(screen, keys, dt)
     
-        canon.update(player, screen, keys) 
-        
+        canon.update(player, screen)
+                
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

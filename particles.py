@@ -46,15 +46,15 @@ class Particle(pygame.sprite.Sprite):
             bucket = self.bucket
             canon = self.canon
             # control cannon angle
-            if keys[pygame.K_LEFT]:
+            if keys[pygame.K_LEFT] and canon.angle < canon.max_angle:
                 self.angle += 1
                 canon.angle += 1
-            if keys[pygame.K_RIGHT]:
+            if keys[pygame.K_RIGHT] and canon.angle > canon.min_angle:
                 self.angle -= 1
                 canon.angle -= 1
 
-            print("angle: ", self.angle)
-            canon.update(self, screen, keys)
+            # print("angle: ", self.angle)
+            
             
             # shoot the player
             if keys[pygame.K_SPACE]:

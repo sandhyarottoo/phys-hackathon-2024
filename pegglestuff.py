@@ -12,6 +12,7 @@ class Bucket(pygame.sprite.Sprite):
         self.rect = (self.pos.x,self.pos.y,10,4)
         self.betadecay = False
         self.vel = pygame.Vector2(10,0)
+        self.image = pygame.Surface((10,4))
 
     def update(self,player):
 
@@ -29,13 +30,15 @@ class Canon(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.rotozoom(canon_png, 90, 0.5)
+        self.angle = 90
+        self.image = pygame.transform.rotozoom(canon_png, self.angle, 0.5)
         self.rect = self.image.get_rect().center
         self.pos = pygame.Vector2(SCREEN_WIDTH // 2 - self.image.get_rect().w//2, 0)
-        
+        self.max_angle = 180
+        self.min_angle = 0
         
 
-    def update(self, player, screen, keys):
+    def update(self, player, screen):
         # if keys[pygame.K_LEFT]:
         #     player.angle += 0.1
         # if keys[pygame.K_RIGHT]:
