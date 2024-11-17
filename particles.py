@@ -3,6 +3,8 @@ import numpy as np
 import pygame
 from forces import *
 from GLOBVAR import *
+from electron import Electron
+import torch
 
 class Particle(pygame.sprite.Sprite):
     neutrinos = 0
@@ -132,9 +134,22 @@ class Particle(pygame.sprite.Sprite):
             self.acc += self.computeForce(particle)
 
         if self.type == 'electron':
+            electron = Electron()
+            electron.load_state_dict(torch.load('model.pth', weights_only=True, map_location=torch.device('cpu')))
+            if particle.is_player:
+                mouse_pos = particle.rect.center
+                mouse_vel = particle.vel
+                electron_pos = self.pos
+                electron_vel = self.vel
+                pos_diff = mouse_pos - electron_pos
+                t = torch.tensor([pos_diff.x, pos_diff.y, electron_vel.x, electron_vel.y, mouse_pos.x, mouse_pos.y, dt])
+                with torch.no_grad():
+                    a = 4*electron(t)
+                    self.acc = pygame.Vector2(a[0].item(), a[1].item())
             if pygame.sprite.collide_mask(self,particle) and particle.type == 'proton':
                 self.electroncapture = True
-            self.acc += self.computeForce(particle)
+
+            # self.acc += self.computeForce(particle)
  
         speed = np.sqrt(self.vel.x**2 + self.vel.y **2)
         while speed > 10:

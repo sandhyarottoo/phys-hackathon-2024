@@ -172,6 +172,11 @@ def runGame():
             box.updateBox(screen, keys, dt)
     
         canon.update(player, screen)
+        bucket.update(player)
+
+        #win condition
+        if Particle.neutrinos == 0:
+            screen.fill((0,0,0))
                 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
