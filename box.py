@@ -65,6 +65,10 @@ class Box():
                         if particle.is_player and particle.respawn:
                             self.particles.remove(particle)
                             boxes[0].addParticle(particle)
+                            if particle.betadecay:
+                                self.betaDecay()
+                                particle.betadecay = False
+                                
                         
                         if (particle.type == 'electron' or particle.type == 'proton') and particle.electroncapture:
                             x, y, velx, vely = particle.pos.x, particle.pos.y, particle.vel.x, particle.vel.y

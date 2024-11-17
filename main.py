@@ -173,6 +173,9 @@ def runGame():
         boxes[0].addParticle(player)
         
         keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            running = False
+            runIntro()
         
         for box in boxes:
             box.updateBox(screen, keys, dt)

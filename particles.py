@@ -71,8 +71,6 @@ class Particle(pygame.sprite.Sprite):
 
         self.mask = pygame.mask.from_surface(self.image)
 
-    # justing is silly boy
-
     def update(self, screen, particle, keys, dt, electron):
         if self.is_player:
             bucket = self.bucket
@@ -126,6 +124,8 @@ class Particle(pygame.sprite.Sprite):
                     Player.respawn = True
                     Player.start = True
                     self.vel = pygame.Vector2(0,0)
+                    
+                    self.betadecay = True
 
                 # respawn if needed
                 if Player.respawn:

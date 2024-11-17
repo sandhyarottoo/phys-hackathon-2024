@@ -17,7 +17,7 @@ class Bucket(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, self.color, self.image.get_rect())
         self.rect = self.image.get_rect(center=self.pos)
         
-    def update(self, player,screen,dt):
+    def update(self, player, screen,dt):
         if pygame.sprite.collide_mask(self, player):
             self.betadecay = True
 
@@ -31,6 +31,7 @@ class Bucket(pygame.sprite.Sprite):
 
         #pygame.draw.rect(self.image, self.color, self.image.get_rect())
         screen.blit(self.image, self.rect)
+        
 
 class Canon(pygame.sprite.Sprite):
 
