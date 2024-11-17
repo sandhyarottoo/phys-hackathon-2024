@@ -53,6 +53,8 @@ class Particle(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, self.color, (self.radius, self.radius), self.radius)
         self.mask = pygame.mask.from_surface(self.image)
 
+    # justing is silly boy
+
     def update(self, screen, particle, keys, dt):
         if self.is_player:
             bucket = self.bucket
