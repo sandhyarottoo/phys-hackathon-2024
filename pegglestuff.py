@@ -8,11 +8,14 @@ from GLOBVAR import *
 class Bucket(pygame.sprite.Sprite):
 
     def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
         self.pos = pygame.Vector2(SCREEN_HEIGHT,SCREEN_WIDTH//2)
         self.rect = (self.pos.x,self.pos.y,10,4)
         self.betadecay = False
+        self.color = (10,250,250)
         self.vel = pygame.Vector2(10,0)
         self.image = pygame.Surface((10,4))
+        pygame.draw.rect(self.image,self.color,self.rect)
 
     def update(self,player):
 
@@ -23,6 +26,7 @@ class Bucket(pygame.sprite.Sprite):
             self.vel *= -1
         self.pos += self.vel*dt
         self.rect.center = self.pos
+        pygame.draw.rect(self.image,self.color,self.rect)
         
 
 

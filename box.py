@@ -57,6 +57,8 @@ class Box():
                             self.removeParticle(other_particle)
                             self.addParticle(Particle('neutron', pygame.Vector2(x, y), pygame.Vector2(velx, vely)))
                             self.addParticle(Particle('neutrino', pygame.Vector2(x1, y1), pygame.Vector2(velx1, vely1)))
+                        if particle.type == 'neutrino' and particle.isAbsorbed:
+                            self.removeParticle(particle)
             self.checkParticles()
         
     def getAdjBoxes(self):
