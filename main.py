@@ -11,45 +11,26 @@ canon = Canon()
 
 ### BUTTON CLASS ###
 class Button():
-    def __init__(self, x, y, width, height, function, text, font, inMenu=True):
+    def __init__(self, x, y, width, height, function, text = None, Font = None):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.function = function
         
-        
-        self.surface = pygame.Surface((self.width, self.height))
+        # Define a rectangle for interaction detection
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        
-        if inMenu:
-            self.textSurf = font.render(text,True, (40, 40, 40))
-            self.colors = {
-                'normal': (196,164,132),
-                'hover': (156, 124, 92),
-                'pressed': (220, 220, 220),
-            }
-        else:
-            self.textSurf = font.render(text,True, (200, 200, 200))
-            self.colors = {
-                'normal': (160, 160, 160),
-                'hover' : (190, 190, 190),
-                'pressed': (130,130,130)
-            }
-        
+
     def process(self):
-        mouse = pygame.mouse
-        mousePos = mouse.get_pos()
-        self.surface.fill(self.colors['normal'])
-        if self.rect.collidepoint(mousePos):
-            self.surface.fill(self.colors['hover'])
-            if mouse.get_pressed(num_buttons=3)[0]:
-                self.surface.fill(self.colors['pressed'])
-                self.function()
-                
-        self.surface.blit(self.textSurf, [self.rect.width/2 - self.textSurf.get_rect().width/2, 
-                                                self.rect.height/2 - self.textSurf.get_rect().height/2])
-        screen.blit(self.surface, self.rect)
+        # Detect mouse interactions and trigger the function
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()
+
+        # Check for hover and click events
+        if self.rect.collidepoint(mouse_pos) and mouse_pressed[0]:  # Left mouse button
+            self.function()
+
+        
         
 def blit_text(surface, text, pos, font, color=pygame.Color('black')):
     words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
@@ -85,27 +66,36 @@ piotrfont = pygame.font.SysFont('arial', 12)
 
 # game methods
 def runIntro():
-    startButton = Button(SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT*(1/3+2/10), 200, 50, runGame, "Start", font)
-    faqButton = Button(SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT*(1/3 + 3/10), 200, 50, runFAQ, "FAQ", font)
-    exitButton = Button(SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT*(1/3 + 4/10), 200, 50, runEXIT, "Exit", font)
+    # Load the background image
+    background_image = pygame.image.load("Images/Menu_Title (1).png")
     
-    ifPiotr = Button(SCREEN_WIDTH/2 - 50, SCREEN_HEIGHT*(1/3 + 5/10), 100, 20, runPiotr, "Press if Piotr", piotrfont, inMenu=False)
-    
+    # Create buttons with the correct positions and sizes, matching the image design
+    startButton = Button(SCREEN_WIDTH / 3 - 15, SCREEN_HEIGHT / 2 - 125, 305, 70, runGame)
+    faqButton = Button(SCREEN_WIDTH / 3 - 15, SCREEN_HEIGHT / 2, 305, 70, runFAQ)
+    exitButton = Button(SCREEN_WIDTH / 3 - 15, SCREEN_HEIGHT / 1.5 + 20, 305, 70, runEXIT)
+    ifPiotr = Button(SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT * (1 / 3 + 5 / 10), 100, 20, runPiotr)
+
     intro = True
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        screen.fill((0,0,0))
+
+        # Draw the background image
+        screen.fill((0, 0, 0))  # Clear the screen
+        screen.blit(background_image, (SCREEN_WIDTH / 4, 0))  # Place the background image
+
+        # Process button interactions (no rendering)
         startButton.process()
         faqButton.process()
         exitButton.process()
         ifPiotr.process()
-        
+
+        # Update the screen
         pygame.display.flip()
         clock.tick(60)
-        
+
 def runPiotr():
     menuButton = Button(20, 10, 140, 50, runIntro, "Menu", font)
     piotr = True
