@@ -81,7 +81,7 @@ class Particle(pygame.sprite.Sprite):
                 Player.respawn = True
 
             #die if u cross the bottom wall
-            if self.pos > SCREEN_HEIGHT:
+            if self.pos.y > SCREEN_HEIGHT:
                 Player.lives -= 1
                 Player.respawn = True
 
